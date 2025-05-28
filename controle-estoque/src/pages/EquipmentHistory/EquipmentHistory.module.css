@@ -1,0 +1,78 @@
+/* Container principal */
+.container {
+    padding: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  
+  /* Mensagens de Loading e Erro */
+  .loading,
+  .error {
+    font-size: 1.2rem;
+    text-align: center;
+    margin-top: 50px;
+    color: var(--text, #333);
+  }
+  
+  /* Títulos e subtítulos */
+  .heading {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: var(--primary, #007BFF);
+  }
+  
+  .subHeading {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 20px 0 10px;
+    color: var(--text, #333);
+  }
+  
+  /* Seção de detalhes do equipamento */
+  .details {
+    margin-bottom: 30px;
+    line-height: 1.5;
+  }
+  
+  .details p {
+    margin-bottom: 10px;
+  }
+  
+  /* Caso não haja histórico */
+  .noHistory {
+    font-size: 1rem;
+    color: var(--text, #333);
+  }
+  
+  /* Container da tabela */
+  .tableContainer {
+    overflow-x: auto;
+    margin-top: 20px;
+  }
+  
+  /* Estilização da tabela */
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--border, #ddd);
+  }
+  
+  .table th,
+  .table td {
+    padding: 10px;
+    border: 1px solid var(--border, #ddd);
+    text-align: left;
+    color: var(--text, #333);
+  }
+  
+  /* Cabeçalho da tabela */
+  .table thead tr {
+    background-color: var(--tableHeaderBg, #f0f0f0);
+  }
+  
+  /* Opções extras para linhas e células */
+  .tableRow:hover {
+    background-color: var(--tableHoverBg, #fafafa);
+  }
+  

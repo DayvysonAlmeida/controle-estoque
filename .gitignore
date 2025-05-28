@@ -1,0 +1,46 @@
+# Arquivos temporários e compilados do Python (Django)
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Bancos de dados, arquivos de log e caches
+db.sqlite3
+mysql_data/
+*.log
+*.pot
+*.mo
+
+# Ambiente virtual (se estiver na pasta do projeto)
+env/
+venv/
+ENV/
+.Python
+
+# Arquivos de configuração local do Django (se houver)
+local_settings.py
+
+# Diretórios gerados automaticamente pelo Django
+staticfiles/
+
+# Arquivos ou configurações sensíveis do Docker
+docker-compose.override.yml
+*.env
+
+# Diretório Node do React: dependências externas não devem ser versionadas
+controle-estoque/node_modules/
+
+# Builds ou diretórios gerados do React
+controle-estoque/build/
+controle-estoque/dist/
+
+# Arquivos de ambiente (React)
+controle-estoque/.env
+
+# Configurações do editor e do sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

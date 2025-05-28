@@ -1,0 +1,42 @@
+# Não é obrigatório informar o "version:" em versões recentes do Docker Compose.
+services:
+  web:
+    build: ./backend          # Caminho para o Dockerfile do Django
+    container_name: django_app
+    command: gunicorn --bind 0.0.0.0:8000 mybackend.wsgi:application
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mysql
+    env_file:
+      - .env
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: controle_estoque
+      MYSQL_USER: estoquedb
+      MYSQL_PASSWORD: dayvyson
+      MYSQL_ROOT_PASSWORD: dayvyson
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+
+      
+  frontend:
+    build: ./controle-estoque       # Caminho para o Dockerfile do React
+    container_name: react_app
+    ports:
+      - "3000:80"
+    depends_on:
+      - web
+    restart: always
+
+volumes:
+  mysql_data:
+    driver: local

@@ -1,0 +1,97 @@
+.container {
+    padding: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .heading {
+    font-size: 24px;
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+  
+  .addButton {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
+    margin-bottom: 20px;
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border: 1px solid;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .th {
+    padding: 10px;
+    border: 1px solid;
+    text-align: left;
+  }
+  
+  .td {
+    padding: 10px;
+    border: 1px solid;
+  }
+  
+  .tr {
+    transition: background-color 0.3s ease;
+  }
+  
+  .actionButton {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-right: 10px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* UserManagement.module.css */
+
+/* Container do seletor */
+.itemsPerPage {
+  display: flex;
+  align-items: center;
+  gap: 8px;         /* Espaçamento entre o label e o select */
+  margin: 16px 0;   /* Espaço acima e abaixo do seletor */
+}
+
+/* Estilo do label */
+.itemsPerPage label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;      /* Ajuste conforme sua paleta (ou use uma variável do tema) */
+}
+
+/* Estilo do select */
+.itemsPerPage select {
+  background: #fff;         /* Fundo branco, por exemplo */
+  border: 1px solid #ccc;    /* Borda cinza clara */
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 14px;
+  color: #333;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+/* Alteração de estilo ao focar no select */
+.itemsPerPage select:focus {
+  border-color: #3f51b5;   /* Use a cor primária do seu tema, se preferir */
+}
+
+/* Opcional: Efeito de hover */
+.itemsPerPage select:hover {
+  border-color: #3f51b5;
+}

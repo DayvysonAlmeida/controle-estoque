@@ -1,0 +1,10 @@
+:root {
+  /* Valores iniciais compatíveis com o tema light no ThemeProvider */
+  --background: #f9f9f9;
+  --text: #333333;
+  --primary: #5ccb5f;
+  --btnprimarybg: #2563EB;
+  --buttonText: #ffffff;
+  --menubg: #ffffff;
+  --textprimary: #111827;
+}

@@ -1,0 +1,155 @@
+/* Login.module.css */
+
+/* Animação de fadeIn para o formulário */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Container que centraliza o formulário e define as cores via variáveis globais */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: var(--background, #f9f9f9);
+  color: var(--text, #fff);
+  transition: background-color 0.3s, color 0.3s;
+  padding: 20px;
+}
+
+/* Estilo do formulário de login */
+.loginForm {
+  max-width: 400px;
+  width: 100%;
+  padding: 50px 30px;
+  background: #413e40;
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 1.5s ease-out;
+}
+
+/* Container para a logo */
+.logoContainer {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Estilo da logo */
+.logo {
+  max-width: 150px;
+  height: auto;
+}
+
+/* Título do formulário */
+.formHeading {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--primary, #009929);
+  margin-bottom: 20px;
+}
+
+/* Mensagem de erro */
+.errorMessage {
+  text-align: center;
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: red;
+  color: var(--buttonText, #fff);
+}
+
+/* Grupo de input com label */
+.inputGroup {
+  margin-bottom: 20px;
+}
+
+.inputGroup label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+  color: var(--labelColor, #5ccb5f);
+}
+
+.inputGroup input {
+  width: 100%;
+  padding: 12px 15px;
+  font-size: 1rem;
+  border: 1px solid var(--border, #ddd);
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.inputGroup input:focus {
+  border-color: var(--focusBorder, #009929);
+}
+
+/* Estilo para o link de "Esqueceu a senha?" */
+.forgotPassword {
+  text-align: right;
+  margin-bottom: 20px;
+}
+
+.forgotPassword a {
+  font-size: 0.85rem;
+  color: var(--linkColor, #009929);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.forgotPassword a:hover {
+  color: var(--linkHoverColor, #009929);
+}
+
+/* Botão de submit */
+.submit {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  background: var(--primary, #5ccb5f);
+  color: var(--buttonText, #fff);
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.submit:hover {
+  background: var(--buttonHover, #009929);
+  transform: translateY(-2px);
+}
+
+/* Link de cadastro */
+.signupLink {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--signupText, #009929);
+  margin-top: 15px;
+}
+
+.signupLink a {
+  color: var(--linkColor, #009929);
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+.signupLink a:hover {
+  color: var(--linkHoverColor, #45a56b);
+}
+
+/* Responsividade */
+@media (max-width: 480px) {
+  .loginForm {
+    padding: 30px 20px;
+  }
+}

@@ -1,0 +1,167 @@
+.container {
+  padding: 10px;
+  max-width: 1500px;
+  margin: 0 auto;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: var(--background, #f9f9f9);
+}
+
+.heading {
+  font-size: 24px;
+  margin-bottom: 20px;
+  font-weight: bold;
+  color: var(--primary, #58bc82);
+}
+
+.filters {
+  margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.input,
+.select {
+  padding: 10px;
+  border: 1px solid var(--border, #ddd);
+  border-radius: 5px;
+  box-sizing: border-box;
+  height: 40px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.select {
+  min-width: 180px;
+}
+
+.button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  background-color: var(--btnprimarybg, #58bc82);
+  color: var(--buttonText, #fff);
+  transition: background-color 0.2s ease-in-out;
+}
+
+.tableContainer {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 20px;
+  border-radius: 5px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--border, #ddd);
+  border-radius: 5px;
+}
+
+.th {
+  padding: 10px;
+  border: 1px solid var(--border, #ddd);
+  text-align: left;
+  color: var(--text, #333);
+}
+
+.td {
+  padding: 10px;
+  border: 1px solid var(--border, #ddd);
+  color: var(--text, #333);
+  border-radius: 5px;
+}
+
+.actionButton {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-right: 10px;
+  background-color: var(--btnprimarybg, #58bc82);
+  color: var(--buttonText, #fff);
+}
+
+.input:focus,
+.select:focus {
+  outline: none;
+  border-color: var(--primary, #58bc82);
+  transition: border-color 0.2s ease-in-out;
+}
+
+/* Substituindo a função darken() por uma cor fixa para hover */
+.button:hover {
+  background-color: #45a56b;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+  .container {
+    padding: 5px;
+  }
+  
+  .heading {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+  
+  .filters {
+    flex-direction: column;
+    margin-bottom: 15px;
+  }
+  
+  .input,
+  .select {
+    min-width: 100%;
+    padding: 8px;
+    height: auto;
+  }
+  
+  .button {
+    padding: 8px 12px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .th,
+  .td {
+    padding: 8px;
+    font-size: 0.9rem;
+  }
+}
+
+.itemsPerPage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.itemsPerPage label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+}
+
+.itemsPerPage select {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 14px;
+  color: #333;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.itemsPerPage select:focus,
+.itemsPerPage select:hover {
+  border-color: #3f51b5;
+}
