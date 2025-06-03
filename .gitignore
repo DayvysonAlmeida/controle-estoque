@@ -1,4 +1,4 @@
-# Arquivos temporários e compilados do Python (Django)
+# Arquivos temporï¿½rios e compilados do Python (Django)
 *.pyc
 *.pyo
 *.pyd
@@ -19,28 +19,32 @@ venv/
 ENV/
 .Python
 
-# Arquivos de configuração local do Django (se houver)
+# Arquivos de configuraï¿½ï¿½o local do Django (se houver)
 local_settings.py
 
-# Diretórios gerados automaticamente pelo Django
+# Diretï¿½rios gerados automaticamente pelo Django
 staticfiles/
 
-# Arquivos ou configurações sensíveis do Docker
+# Arquivos ou configuraï¿½ï¿½es sensï¿½veis do Docker
 docker-compose.override.yml
 *.env
 
-# Diretório Node do React: dependências externas não devem ser versionadas
+# Diretï¿½rio Node do React: dependï¿½ncias externas nï¿½o devem ser versionadas
 controle-estoque/node_modules/
 
-# Builds ou diretórios gerados do React
+# Builds ou diretï¿½rios gerados do React
 controle-estoque/build/
 controle-estoque/dist/
 
 # Arquivos de ambiente (React)
 controle-estoque/.env
 
-# Configurações do editor e do sistema
+# Configuraï¿½ï¿½es do editor e do sistema
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
+# Configuraï¿½ï¿½es do docker
+
+.yml
+Dockerfile

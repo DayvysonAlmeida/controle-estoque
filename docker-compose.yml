@@ -3,11 +3,11 @@ services:
   web:
     build: ./backend          # Caminho para o Dockerfile do Django
     container_name: django_app
-    command: gunicorn --bind 0.0.0.0:8000 mybackend.wsgi:application
+    command: gunicorn --bind 0.0.0.0:4000 mybackend.wsgi:application
     volumes:
       - ./backend:/app
     ports:
-      - "8000:8000"
+      - "4000:4000"
     depends_on:
       - mysql
     env_file:
