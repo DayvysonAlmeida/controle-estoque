@@ -17,11 +17,8 @@ services:
     image: mysql:8.0
     container_name: mysql_db
     restart: always
-    environment:
-      MYSQL_DATABASE: controle_estoque
-      MYSQL_USER: estoquedb
-      MYSQL_PASSWORD: dayvyson
-      MYSQL_ROOT_PASSWORD: dayvyson
+    env_file:
+    - ./.env
     ports:
       - "3307:3306"
     volumes:
