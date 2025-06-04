@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Expõe a porta do Django (caso não esteja usando o servidor Apache ou Nginx)
-EXPOSE 8080
+EXPOSE 4000
 
 # Comando para iniciar o Django
 CMD ["gunicorn", "--workers=4", "--timeout=120", "--bind", "0.0.0.0:4000", "mybackend.wsgi:application"]
