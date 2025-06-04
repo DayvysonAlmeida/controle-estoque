@@ -1,5 +1,5 @@
 # Etapa de build do React usando uma imagem Node
-FROM node:18-alpine as build
+FROM node:18-alpine AS build
 
 # Define o diretório de trabalho
 WORKDIR /app
