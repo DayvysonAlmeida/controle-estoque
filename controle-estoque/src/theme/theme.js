@@ -63,7 +63,7 @@ export const ThemeProvider = ({ children }) => {
       : {
           // Dark Theme
           background: "#282c34",
-          text: "#FFFFFF",
+          text: "#ef4444",
           primary: "#009929",
           secondary: "#E76F00",
           border: "#444444",

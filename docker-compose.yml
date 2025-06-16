@@ -30,6 +30,13 @@ services:
     container_name: react_app
     ports:
       - "3000:80"
+    volumes:
+      - ./controle-estoque:/app      # Ajuste aqui a montagem do volume para refletir o diretório do código fonte
+    environment:
+      - CHOKIDAR_USEPOLLING=true     # Ativa o polling para o watcher
+      # Se necessário, ajuste outras variáveis como CHOKIDAR_INTERVAL, por exemplo:
+      # - CHOKIDAR_INTERVAL=100
+    command: npm start                # Comando para iniciar o React em modo de desenvolvimento
     depends_on:
       - web
     restart: always

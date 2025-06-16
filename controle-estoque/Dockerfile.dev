@@ -1,0 +1,19 @@
+# Dockerfile.dev para o React - Desenvolvimento
+FROM node:18
+
+WORKDIR /app
+
+# Copia os arquivos de dependência para aproveitar o cache do Docker
+COPY package.json package-lock.json ./
+RUN npm install
+
+# Copia o restante dos arquivos para o container
+COPY . .
+
+# Variável para garantir que o watcher funcione em ambientes com volumes montados
+ENV CHOKIDAR_USEPOLLING=true CHOKIDAR_INTERVAL=300
+
+EXPOSE 3000
+
+# Inicia o servidor de desenvolvimento (hot reload)
+CMD ["npm", "start"]
