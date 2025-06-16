@@ -1,0 +1,22 @@
+# Dockerfile.dev para o Django - Desenvolvimento
+FROM python:3.10
+
+# Evita geração de bytecode e habilita saída não-bufada
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# Copia o arquivo de dependências e instala as bibliotecas
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copia o restante dos arquivos do projeto para o container
+COPY . .
+
+# Expõe a porta usada para o desenvolvimento
+EXPOSE 4000
+
+# Comando para iniciar o Django em modo desenvolvimento (runserver)
+CMD ["sh", "-c", "sleep 10 && gunicorn --bind 0.0.0.0:4000 mybackend.wsgi:application"]
+
