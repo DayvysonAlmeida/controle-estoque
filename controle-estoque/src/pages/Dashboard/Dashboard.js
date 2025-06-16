@@ -23,7 +23,7 @@ const Dashboard = () => {
   // Estados para os dados
   const [profile, setProfile] = useState(null);
   const [estoques, setEstoques] = useState([]);
-  // Armazena o objeto do estoque selecionado (com id e nome)
+  // Armazena o objeto do estoque selecionado (com id e nome atualizado)
   const [selectedStock, setSelectedStock] = useState(null);
   const [allEquipmentsByStock, setAllEquipmentsByStock] = useState({});
 
@@ -35,12 +35,20 @@ const Dashboard = () => {
         const profileData = profileRes.data;
         setProfile(profileData);
 
-        if (Array.isArray(profileData.estoques)) {
-          // Converte cada item para um objeto com { id, nome }
-          const userStocks = profileData.estoques.map((stock) => ({
+        if (profileData.estoques) {
+          // Se não for array, transforma em array
+          const stocksArray = Array.isArray(profileData.estoques)
+            ? profileData.estoques
+            : [profileData.estoques];
+
+          // Mapeia cada item para um objeto com { id, nome }
+          // Se a API não fornecer o nome, usamos o fallback "Estoque {id}"
+          const userStocks = stocksArray.map((stock) => ({
             id: stock.id || stock,
-            nome: stock.nome || `Estoque ${stock}`
+            nome: stock.nome || stock.name || `Estoque ${stock}`
           }));
+
+          console.log("Estoques mapeados:", userStocks);
           setEstoques(userStocks);
 
           if (userStocks.length > 0 && !selectedStock) {
@@ -87,6 +95,39 @@ const Dashboard = () => {
       fetchEquipmentsData();
     }
   }, [estoques]);
+
+  // Efeito para buscar detalhes do estoque selecionado se necessário,
+  // e atualizar tanto o selectedStock quanto o array de estoques.
+  useEffect(() => {
+    const fetchStockDetail = async () => {
+      if (
+        selectedStock &&
+        selectedStock.id &&
+        // Verifica se o nome atual é um fallback (inicia com "Estoque ")
+        selectedStock.nome.startsWith("Estoque ")
+      ) {
+        try {
+          const response = await api.get(`estoques/${selectedStock.id}`);
+          const stockDetail = response.data;
+          console.log("Detalhe do estoque:", stockDetail);
+          // Atualiza o selectedStock com os detalhes completos
+          setSelectedStock((prev) => ({
+            ...prev,
+            ...stockDetail,
+          }));
+          // Atualiza o array de estoques com os detalhes encontrados
+          setEstoques((prevEstoques) =>
+            prevEstoques.map((stock) =>
+              stock.id === selectedStock.id ? { ...stock, ...stockDetail } : stock
+            )
+          );
+        } catch (error) {
+          console.error("Erro ao buscar detalhe do estoque:", error);
+        }
+      }
+    };
+    fetchStockDetail();
+  }, [selectedStock?.id, selectedStock?.nome]);
 
   // Obtém os equipamentos do estoque selecionado
   const equipments = selectedStock
@@ -156,10 +197,10 @@ const Dashboard = () => {
           </p>
           {estoques.length > 1 && (
             <select
-              value={selectedStock?.nome}
+              value={selectedStock?.id || ""}
               onChange={(e) => {
-                const nomeSelecionado = e.target.value;
-                const stock = estoques.find((s) => s.nome === nomeSelecionado);
+                const idSelecionado = Number(e.target.value);
+                const stock = estoques.find((s) => s.id === idSelecionado);
                 setSelectedStock(stock);
               }}
               style={{
@@ -173,7 +214,7 @@ const Dashboard = () => {
               }}
             >
               {estoques.map((estoque) => (
-                <option key={estoque.id} value={estoque.nome}>
+                <option key={estoque.id} value={estoque.id}>
                   {estoque.nome}
                 </option>
               ))}
