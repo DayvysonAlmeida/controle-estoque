@@ -52,7 +52,7 @@
 .input {
   padding: 10px;
   width: 100%;
-  border: 1px solid var(--border, #ddd);
+  border: 1px solid var(--border, #ff0000);
   border-radius: 5px;
 }
   
