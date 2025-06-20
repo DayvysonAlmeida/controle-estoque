@@ -46,7 +46,7 @@ controle-estoque/.env
 Thumbs.db
 # Configura��es do docker
 
-*.yml
+
 *Dockerfile
 
 
