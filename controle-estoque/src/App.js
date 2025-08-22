@@ -1,11 +1,5 @@
-// src/App.js
 import React, { useState, useEffect } from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  useLocation,
-} from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
 import Login from "./pages/Login/Login";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Profile from "./pages/Profile/Profile";
@@ -16,16 +10,16 @@ import EquipmentHistory from "./pages/EquipmentHistory/EquipmentHistory";
 import UserManagement from "./pages/UserManagement/UserManagement";
 import EquipmentEdit from "./pages/EquipmentEdit/EquipmentEdit";
 import UserForm from "./pages/UserForm/UserForm";
+import UserEdit from "./pages/UserEdit/UserEdit";
+import LogHistory from "./pages/LogHistory/LogHistory";
 import AccountMenu from "./components/AccountMenu/AccountMenu";
 import LeftSidebar from "./components/LeftSidebar/LeftSidebar";
-import LogHistory from "./pages/LogHistory/LogHistory";
 import { ThemeProvider, useTheme } from "./theme/theme";
-import api from "./services/api";
-import GlobalStyle from "./GlobalStyles"; // Global styles unificados
-import SessionManager from "./components/SessionManager"; // Gerência de expiração de sessão
-import 'rsuite/dist/rsuite.min.css';
-import UserEdit from "./pages/UserEdit/UserEdit";
+import GlobalStyle from "./GlobalStyles";
+import SessionManager from "./components/SessionManager";
 import { NotificationProvider } from './contexts/NotificationProvider';
+import api from "./services/api";
+import 'rsuite/dist/rsuite.min.css';
 
 function AppWrapper() {
   const location = useLocation();
@@ -36,7 +30,6 @@ function AppWrapper() {
   const [profile, setProfile] = useState(null);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
-  // Atualiza screenWidth ao redimensionar a janela
   useEffect(() => {
     const handleResize = () => setScreenWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
@@ -52,32 +45,20 @@ function AppWrapper() {
         console.error("Erro ao buscar perfil:", error);
       }
     }
-    if (isLoggedIn) {
-      fetchProfile();
-    }
+    if (isLoggedIn) fetchProfile();
   }, [isLoggedIn]);
 
-  // Cálculo da margem do conteúdo principal
-  let contentMargin = "0px";
-  if (isLoggedIn) {
-    if (screenWidth >= 768) {
-      // Em desktop: 200px se aberto, 60px se recolhido
-      contentMargin = isSidebarCollapsed ? "60px" : "200px";
-    } else {
-      // Em mobile: se o sidebar estiver aberto, calcula a margem conforme a largura definida (70% da tela, com máximo 300px)
-      contentMargin = isSidebarCollapsed
-        ? "0px"
-        : `${Math.min(screenWidth * 0.7, 300)}px`;
-    }
-  }
+  const contentClass = [
+    "app-content",
+    screenWidth < 768
+      ? isSidebarCollapsed ? "mobileClosed" : "mobileOpen"
+      : isSidebarCollapsed ? "collapsed" : "expanded"
+  ].join(" ");
 
   return (
     <div
       className="app-container"
       style={{
-        display: "flex",
-        minHeight: "100vh",
-        position: "relative",
         backgroundColor: colors.background,
         color: colors.text,
       }}
@@ -89,15 +70,8 @@ function AppWrapper() {
           toggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
         />
       )}
-      <div
-        className="app-content"
-        style={{
-          flex: 1,
-          marginLeft: contentMargin,
-          padding: "50px",
-          transition: "margin-left 0.3s ease",
-        }}
-      >
+
+      <div className={contentClass}>
         {isLoggedIn && <AccountMenu />}
         <Routes>
           <Route path="/" element={<Login />} />

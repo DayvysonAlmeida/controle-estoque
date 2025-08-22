@@ -1,14 +1,14 @@
+// src/components/LeftSidebar/LeftSidebar.js
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "../../theme/theme";
 import styles from "./LeftSidebar.module.css";
 import api from "../../services/api";
-import logo from "../../assets/logo.png"; 
+import logo from "../../assets/logo.png";
 
 const LeftSidebar = ({ onSelectStock, isCollapsed, toggleSidebar }) => {
   const [estoques, setEstoques] = useState([]);
   const [userEstoqueIds, setUserEstoqueIds] = useState([]);
-  // Novo estado para armazenar o perfil completo do usuário
   const [userProfile, setUserProfile] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
@@ -16,19 +16,18 @@ const LeftSidebar = ({ onSelectStock, isCollapsed, toggleSidebar }) => {
   const location = useLocation();
   const { colors } = useTheme();
 
-  // Atualiza se a tela é mobile
+  // Detecta mudança de tamanho da tela
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
       if (mobile) toggleSidebar(false);
     };
-
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [toggleSidebar]);
 
-  // Buscar perfil do usuário e salvar o perfil completo
+  // Busca perfil do usuário
   useEffect(() => {
     async function fetchUserProfile() {
       try {
@@ -42,7 +41,7 @@ const LeftSidebar = ({ onSelectStock, isCollapsed, toggleSidebar }) => {
     fetchUserProfile();
   }, []);
 
-  // Buscar estoques e filtrar conforme perfil do usuário
+  // Busca estoques filtrados pelo perfil
   useEffect(() => {
     async function fetchStocks() {
       try {
@@ -67,53 +66,44 @@ const LeftSidebar = ({ onSelectStock, isCollapsed, toggleSidebar }) => {
 
   const handleNavigation = (path) => {
     navigate(path);
-    if (isMobile) toggleSidebar(true);
+    if (isMobile) toggleSidebar();
   };
 
-  const isActive = (path) => location.pathname === path ? styles.active : "";
+  const isActive = (path) => (location.pathname === path ? styles.active : "");
+
+  // Determina classes CSS
+  const sidebarClass = [
+    styles.sidebarContainer,
+    isCollapsed ? styles.collapsed : styles.expanded,
+    isMobile ? (isCollapsed ? styles.mobileClosed : styles.mobileOpen) : "",
+  ].join(" ");
 
   return (
     <div
-      className={styles.sidebarContainer}
+      className={sidebarClass}
       style={{
         backgroundColor: colors.sidebarBg || "#413e40",
         color: colors.sidebarText || "#ecf0f1",
-        width: isCollapsed ? "60px" : "200px",
-        overflowY: isCollapsed && !isMobile ? "hidden" : "auto",
-        height: "100vh",
       }}
     >
       {/* Header */}
-      <div
-        className={styles.header}
-        style={{
-          flexDirection: isCollapsed ? "column" : "row",
-          alignItems: isCollapsed ? "flex-start" : "center",
-          padding: "10px 15px",
-        }}
-      >
+      <div className={styles.header}>
         <div className={styles.headerLeft}>
-          {isCollapsed ? (
-            <img src={logo} alt="Logo" className={styles.logoCollapsed} />
-          ) : (
-            <img src={logo} alt="Logo Controle Estoque" className={styles.logo} />
-          )}
+          <img
+            src={logo}
+            alt="Logo"
+            className={isCollapsed ? styles.logoCollapsed : styles.logo}
+          />
         </div>
-        <div
-          className={styles.headerRight}
-          style={{
-            marginTop: isCollapsed ? "5px" : "0",
-            alignSelf: isCollapsed ? "stretch" : "center",
-          }}
-        >
+        <div className={styles.headerRight}>
           <button className={styles.toggleButton} onClick={toggleSidebar}>
             {isCollapsed ? "☰" : "«"}
           </button>
         </div>
       </div>
 
-      {/* Menu de navegação */}
-      {!isCollapsed && (
+      {/* Navegação */}
+      {(!isCollapsed || isMobile) && (
         <nav className={styles.nav}>
           <button
             className={`${styles.navItem} ${isActive("/dashboard")}`}
@@ -122,23 +112,21 @@ const LeftSidebar = ({ onSelectStock, isCollapsed, toggleSidebar }) => {
             Dashboard
           </button>
 
-          {estoques &&
-            estoques.map((estoque) => (
-              <button
-                key={estoque.id}
-                className={`${styles.navItem} ${
-                  location.pathname === `/estoque/${estoque.id}` ? styles.active : ""
-                }`}
-                onClick={() => {
-                  if (onSelectStock) onSelectStock(estoque.id);
-                  handleNavigation(`/estoque/${estoque.id}`);
-                }}
-              >
-                {estoque.nome}
-              </button>
-            ))}
+          {estoques.map((estoque) => (
+            <button
+              key={estoque.id}
+              className={`${styles.navItem} ${
+                location.pathname === `/estoque/${estoque.id}` ? styles.active : ""
+              }`}
+              onClick={() => {
+                if (onSelectStock) onSelectStock(estoque.id);
+                handleNavigation(`/estoque/${estoque.id}`);
+              }}
+            >
+              {estoque.nome}
+            </button>
+          ))}
 
-          {/* Botão adicional apenas para administradores */}
           {userProfile && userProfile.role === "admin" && (
             <button
               className={`${styles.navItem} ${isActive("/logs")}`}

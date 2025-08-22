@@ -32,11 +32,11 @@ const EquipmentFilters = ({ filters, onFilterChange, onClearFilters }) => {
       <input
         type="text"
         name="nome"
-        placeholder="Filtrar por Nome"
+        placeholder="Filtrar por Fornecedor"
         value={filters.nome}
         onChange={handleInputChange}
         className={styles.input}
-        aria-label="Filtrar por Nome"
+        aria-label="Filtrar por Fornecedor"
       />
       <input
         type="text"
@@ -74,6 +74,15 @@ const EquipmentFilters = ({ filters, onFilterChange, onClearFilters }) => {
         className={styles.input}
         aria-label="Filtrar por Modelo"
       />
+        <input
+          type="text"
+          name="serialnumber"
+          placeholder="Filtrar por SerialNumber"
+          value={filters.serialnumber}
+          onChange={handleInputChange}
+          className={styles.input}
+          aria-label="Filtrar por SerialNumber"
+        />
       <select
         name="status"
         value={filters.status}
@@ -85,16 +94,9 @@ const EquipmentFilters = ({ filters, onFilterChange, onClearFilters }) => {
         <option value="Ativo">Ativo</option>
         <option value="Manutenção">Manutenção</option>
         <option value="Inativo">Inativo</option>
+        <option value="Inativo">Substituída</option>
+        <option value="Inativo">Backup</option>
       </select>
-      <input
-        type="text"
-        name="serialnumber"
-        placeholder="Filtrar por SerialNumber"
-        value={filters.serialnumber}
-        onChange={handleInputChange}
-        className={styles.input}
-        aria-label="Filtrar por SerialNumber"
-      />
       <button onClick={onClearFilters} className={styles.button}>
         Limpar Filtros
       </button>

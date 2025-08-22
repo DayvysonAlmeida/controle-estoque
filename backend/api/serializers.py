@@ -11,13 +11,28 @@ class EstoqueSerializer(serializers.ModelSerializer):
 # Serializer para Equipment
 class EquipmentSerializer(serializers.ModelSerializer):
     estoque = serializers.PrimaryKeyRelatedField(queryset=Estoque.objects.all())
-  
+    sem_tombamento = serializers.BooleanField(default=False, write_only=True)
+
     class Meta:
         model = Equipment
         fields = [
-            'id', 'nome', 'modelo', 'marca', 'tombamento', 
-            'serialnumber', 'status', 'descricao', 'estoque', 'categoria'
+            'id', 'nome', 'modelo', 'marca', 'tombamento',
+            'serialnumber', 'status', 'descricao', 'categoria',
+            'estoque', 'ip', 'sem_tombamento'
         ]
+
+    def validate(self, data):
+        sem_tombamento = data.pop("sem_tombamento", False)
+        tombamento = data.get("tombamento")
+
+        if sem_tombamento:
+            data["tombamento"] = None
+        elif tombamento is None:
+            raise serializers.ValidationError({
+                "tombamento": "Informe o tombamento ou marque 'sem_tombamento'."
+            })
+
+        return data
 
     def update(self, instance, validated_data):
         request = self.context.get("request")
@@ -26,18 +41,6 @@ class EquipmentSerializer(serializers.ModelSerializer):
             validated_data.pop("serialnumber", None)
         return super().update(instance, validated_data)
 
-# Serializer para Equipment History
-class EquipmentHistorySerializer(serializers.ModelSerializer):
-    usuario = serializers.SerializerMethodField()
-    
-    class Meta:
-        model = EquipmentHistory
-        fields = '__all__'
-    
-    def get_usuario(self, obj):
-        if obj.usuario:
-            return obj.usuario.username
-        return "Desconhecido"
 
 # Serializer para o Grupo
 class GroupSerializer(serializers.ModelSerializer):
@@ -116,3 +119,9 @@ class LogEquipamentoSerializer(serializers.ModelSerializer):
         if obj.equipamento:
             return obj.equipamento.nome
         return ""
+
+# Serializer para EquipmentHistory
+class EquipmentHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EquipmentHistory
+        fields = '__all__'

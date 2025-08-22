@@ -61,6 +61,7 @@ const EquipmentList = () => {
     tombamento: "",
     modelo: "",
     status: "",
+    ip: "",
     serialnumber: "",
   });
   const [page, setPage] = useState(1);
@@ -144,6 +145,7 @@ const EquipmentList = () => {
       modelo: "",
       status: "",
       serialnumber: "",
+      ip: "",
     });
     setPage(1);
   };
@@ -207,7 +209,10 @@ const EquipmentList = () => {
         (!filters.status || equipment.status === filters.status) &&
         (!filters.serialnumber ||
           (equipment.serialnumber &&
-            equipment.serialnumber.toLowerCase().includes(filters.serialnumber.toLowerCase())))
+            equipment.serialnumber.toLowerCase().includes(filters.serialnumber.toLowerCase()))) &&
+        (!filters.ip ||
+          (equipment.ip &&
+            equipment.ip.toLowerCase().includes(filters.ip.toLowerCase())))    
       );
     });
   }, [equipments, filters]);
@@ -247,36 +252,20 @@ const EquipmentList = () => {
         </button>
       )}
   
-      {/* Seletor de itens por página */}
-      <div className={styles.itemsPerPage}>
-        <label htmlFor="itemsPerPage">Itens por página:</label>
-        <select
-          id="itemsPerPage"
-          value={itemsPerPage}
-          onChange={(e) => {
-            setItemsPerPage(Number(e.target.value));
-            setPage(1);
-          }}
-        >
-          <option value={5}>5</option>
-          <option value={10}>10</option>
-          <option value={15}>15</option>
-          <option value={20}>20</option>
-        </select>
-      </div>
   
       <div className={styles.tableContainer}>
         <table className={styles.table} style={{ borderColor: colors.border }}>
           <thead>
             <tr style={{ backgroundColor: colors.menuborder }}>
-              <th className={styles.th}>Nome</th>
-              <th className={styles.th}>Marca</th>
-              <th className={styles.th}>Categoria</th>
-              <th className={styles.th}>Tombamento</th>
-              <th className={styles.th}>Modelo</th>
-              <th className={styles.th}>Status</th>
-              <th className={styles.th}>Serial</th>
-              <th className={styles.th}>Ações</th>
+            <th className={styles.th}>Fornecedor</th>
+            <th className={styles.th}>Marca</th>
+            <th className={styles.th}>Categoria</th>
+            <th className={styles.th}>Tombamento</th>            
+            <th className={styles.th}>IP</th> 
+            <th className={styles.th}>Modelo</th>
+            <th className={styles.th}>Serial</th>
+            <th className={styles.th}>Status</th>
+            <th className={styles.th}>Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -291,10 +280,12 @@ const EquipmentList = () => {
                 </td>
                 <td className={styles.td}>{equipment.marca}</td>
                 <td className={styles.td}>{equipment.categoria}</td>
-                <td className={styles.td}>{equipment.tombamento}</td>
+                <td className={styles.td}>{equipment.tombamento ? (equipment.tombamento) : (
+                <span style={{ color: "gray", fontStyle: "italic" }}>Sem tombamento</span>)}</td>
+                <td className={styles.td}>{equipment.ip || "-"}</td> 
                 <td className={styles.td}>{equipment.modelo}</td>
-                <td className={styles.td}>{equipment.status}</td>
                 <td className={styles.td}>{equipment.serialnumber}</td>
+                <td className={styles.td}>{equipment.status}</td>
                 <td className={styles.td}>
                   {hasManagePermission() && (
                     <>
@@ -337,6 +328,23 @@ const EquipmentList = () => {
           showFirstButton
           showLastButton
         />
+                        {/* Seletor de itens por página */}
+                        <div className={styles.itemsPerPage}>
+                          <label htmlFor="itemsPerPage">Itens por página:</label>
+                          <select
+                            id="itemsPerPage"
+                            value={itemsPerPage}
+                            onChange={(e) => {
+                              setItemsPerPage(Number(e.target.value));
+                              setPage(1);
+                            }}
+                          >
+                            <option value={5}>5</option>
+                            <option value={10}>10</option>
+                            <option value={15}>15</option>
+                            <option value={20}>20</option>
+                          </select>
+                        </div>
       </Stack>
   
       <Dialog open={deleteDialogOpen} onClose={handleCloseDeleteDialog}>

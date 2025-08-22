@@ -17,7 +17,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  min-height: 85vh;
   background: var(--background, #f9f9f9);
   color: var(--text, #fff);
   transition: background-color 0.3s, color 0.3s;
