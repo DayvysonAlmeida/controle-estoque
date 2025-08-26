@@ -1,14 +1,11 @@
 /* src/index.css */
-
-/* 1. Garante que a base da página ocupe 100% da altura e não tenha margens */
-html, body {
+html, body, #root {
+  height: auto;
   margin: 0;
   padding: 0;
-  height: 100%;
-  width: 100%;
+  width: auto;
 }
 
-/* 2. Aplica a cor de fundo do tema ao body. Isto será a cor "de fora" do login */
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -18,9 +15,7 @@ body {
   background-color: var(--background); /* Controlado pelo theme.js */
 }
 
-/* 3. Força o container principal do React a ocupar toda a altura */
 #root {
-  height: 100%;
   display: flex;
   flex-direction: column;
 }
