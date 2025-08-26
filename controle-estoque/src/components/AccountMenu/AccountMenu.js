@@ -1,3 +1,4 @@
+// src/components/AccountMenu/AccountMenu.js
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
@@ -23,16 +24,12 @@ export default function AccountMenu() {
   const open = Boolean(anchorEl);
   const navigate = useNavigate();
   const { colors } = useTheme();
-
-  // Estado para armazenar o nome do usuário logado
   const [userName, setUserName] = React.useState("");
 
-  // Busca o perfil do usuário e atualiza o estado com o nome
   React.useEffect(() => {
     async function fetchProfile() {
       try {
         const response = await api.get("profile/");
-        // Supondo que o endpoint retorne um objeto com a propriedade 'nome'
         setUserName(response.data.nome);
       } catch (error) {
         console.error("Erro ao buscar perfil:", error);
@@ -41,16 +38,13 @@ export default function AccountMenu() {
     fetchProfile();
   }, []);
 
-  // Função para checar se o usuário é Administrador
   const isAdmin = () => {
     const storedProfile = localStorage.getItem("userProfile");
     if (!storedProfile) return false;
     try {
       const userProfile = JSON.parse(storedProfile);
-      // Se estiver marcado como superusuário, retorna true
       if (userProfile.is_superuser) return true;
       if (userProfile.groups && Array.isArray(userProfile.groups)) {
-        // Verifica se algum dos objetos de grupo tem name igual a "Administrador"
         return userProfile.groups.some((group) => group.name === "Administrador");
       }
       return false;
@@ -60,70 +54,32 @@ export default function AccountMenu() {
     }
   };
   
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleAddUser = () => {
-    handleClose();
-    navigate("/usuarios/novo");
-  };
-
-  const handleManageUsers = () => {
-    handleClose();
-    navigate("/usuarios");
-  };
-
-  const handleProfile = () => {
-    handleClose();
-    navigate("/profile");
-  };
-
-  const handleSettings = () => {
-    handleClose();
-    navigate("/settings");
-  };
-
-  const handleLogout = () => {
-    handleClose();
-    navigate("/");
-  };
+  const handleClick = (event) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
+  const handleAddUser = () => { handleClose(); navigate("/usuarios/novo"); };
+  const handleManageUsers = () => { handleClose(); navigate("/usuarios"); };
+  const handleProfile = () => { handleClose(); navigate("/profile"); };
+  const handleSettings = () => { handleClose(); navigate("/settings"); };
+  const handleLogout = () => { handleClose(); navigate("/"); };
 
   return (
-    <Box className={styles.accountMenuContainer}>
-      <Box
-        className={styles.accountMenuBox}
-        sx={{
-          backgroundColor: colors.background,
-          color: colors.text,
-        }}
-      >
+    <div className={styles.accountMenuContainer}>
+      {/* O Box agora não tem mais estilos sx */}
+      <Box className={styles.accountMenuBox}>
         <Typography className={styles.accountMenuText}>
-          👋 Bem-vindo, {userName || "Usuário"}
+           {userName || "Usuário"} 
         </Typography>
         <Tooltip title="Configurações da Conta">
           <IconButton
             onClick={handleClick}
             size="small"
             className={styles.accountMenuButton}
-            sx={{
-              backgroundColor: colors.buttonBackground,
-              color: colors.buttonText,
-              "&:hover": {
-                backgroundColor: colors.hoverBackground,
-              },
-            }}
             aria-controls={open ? "account-menu" : undefined}
             aria-haspopup="true"
             aria-expanded={open ? "true" : undefined}
           >
             <Avatar sx={{ width: 32, height: 32, bgcolor: colors.primary }}>
-              {userName ? userName[0] : "A"}
+              {userName ? userName[0].toUpperCase() : "U"}
             </Avatar>
           </IconButton>
         </Tooltip>
@@ -143,25 +99,8 @@ export default function AccountMenu() {
               mt: 1.5,
               bgcolor: colors.background,
               color: colors.text,
-              "& .MuiAvatar-root": {
-                width: 32,
-                height: 32,
-                ml: -0.5,
-                mr: 1,
-                bgcolor: colors.primary,
-              },
-              "&::before": {
-                content: '""',
-                display: "block",
-                position: "absolute",
-                top: 0,
-                right: 14,
-                width: 10,
-                height: 10,
-                bgcolor: colors.background,
-                transform: "translateY(-50%) rotate(45deg)",
-                zIndex: 0,
-              },
+              "& .MuiAvatar-root": { width: 32, height: 32, ml: -0.5, mr: 1, bgcolor: colors.primary },
+              "&::before": { content: '""', display: "block", position: "absolute", top: 0, right: 14, width: 10, height: 10, bgcolor: colors.background, transform: "translateY(-50%) rotate(45deg)", zIndex: 0 },
             },
           },
         }}
@@ -169,42 +108,31 @@ export default function AccountMenu() {
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
         <MenuItem onClick={handleProfile}>
-          <ListItemIcon>
-            <Person fontSize="small" />
-          </ListItemIcon>
+          <ListItemIcon><Person fontSize="small" sx={{ color: colors.textprimary }} /></ListItemIcon>
           Perfil
         </MenuItem>
-        {/* Itens apenas para usuários administradores */}
         {isAdmin() && (
           <>
             <MenuItem onClick={handleManageUsers}>
-              <ListItemIcon>
-                <Group fontSize="small" />
-              </ListItemIcon>
-              Gerenciar Usuários
+              <ListItemIcon><Group fontSize="small" sx={{ color: colors.textprimary }} /></ListItemIcon>
+              Gerir Utilizadores
             </MenuItem>
             <MenuItem onClick={handleAddUser}>
-              <ListItemIcon>
-                <PersonAdd fontSize="small" />
-              </ListItemIcon>
-              Adicionar Usuário
+              <ListItemIcon><PersonAdd fontSize="small" sx={{ color: colors.textprimary }} /></ListItemIcon>
+              Adicionar Utilizador
             </MenuItem>
           </>
         )}
         <MenuItem onClick={handleSettings}>
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
+          <ListItemIcon><Settings fontSize="small" sx={{ color: colors.textprimary }} /></ListItemIcon>
           Configurações
         </MenuItem>
-        <Divider />
+        <Divider sx={{ borderColor: colors.bordercolor }} />
         <MenuItem onClick={handleLogout}>
-          <ListItemIcon>
-            <Logout fontSize="small" />
-          </ListItemIcon>
+          <ListItemIcon><Logout fontSize="small" sx={{ color: colors.textprimary }} /></ListItemIcon>
           Logout
         </MenuItem>
       </Menu>
-    </Box>
+    </div>
   );
 }
