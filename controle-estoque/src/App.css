@@ -7,15 +7,10 @@
 
 .appContainer {
   display: flex;
-  flex-grow: 1; /* Essencial para ocupar a altura do #root */
+  flex-grow: 1;
   min-height: 100%;
-  background-color: var(--background);
-}
-
-/* --- Classe especial para a página de Login --- */
-.appContainer.login-page {
-  /* Quando esta classe está presente, o fundo é FORÇADO a ser escuro */
-  background-color: #1F2937 !important;
+  /* A cor de fundo geral agora vem apenas do tema (GlobalStyles/index.css) */
+  /* A classe .login-page foi removida */
 }
 
 .contentWrapper {
@@ -23,11 +18,10 @@
   padding: 20px;
   padding-top: var(--header-height);
   transition: margin-left 0.3s ease;
-  width: 100%;
-  box-sizing: border-box; /* Previne problemas de layout com o padding */
+  box-sizing: border-box;
 }
 
-/* Desktop */
+/* Comportamento em Desktop */
 .sidebarExpanded .contentWrapper {
   margin-left: var(--sidebar-width-expanded);
 }
@@ -35,7 +29,7 @@
   margin-left: var(--sidebar-width-collapsed);
 }
 
-/* Telemóvel */
+/* Comportamento em Telemóvel */
 @media (max-width: 768px) {
   .sidebarExpanded .contentWrapper,
   .sidebarCollapsed .contentWrapper {
