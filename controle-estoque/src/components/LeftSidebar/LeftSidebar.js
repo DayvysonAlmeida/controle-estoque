@@ -5,7 +5,7 @@ import styles from "./LeftSidebar.module.css";
 import api from "../../services/api";
 import logo from "../../assets/logo.png";
 import AssessmentIcon from '@mui/icons-material/Assessment';
-import SettingsIcon from '@mui/icons-material/Settings';
+// import SettingsIcon from '@mui/icons-material/Settings';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import { useTheme } from "../../theme/theme";
@@ -82,10 +82,10 @@ const LeftSidebar = ({ isSidebarOpen, toggleSidebar }) => {
             <span className={styles.navText}>Logs</span>
           </button>
         )}
-        <button className={`${styles.navItem} ${isActive("/settings")}`} onClick={() => handleNavigation("/settings")}>
+        {/* <button className={`${styles.navItem} ${isActive("/settings")}`} onClick={() => handleNavigation("/settings")}>
             <SettingsIcon />
             <span className={styles.navText}>Settings</span>
-        </button>
+        </button> */}
       </nav>
       <div className={styles.themeToggleContainer}>
           <WbSunnyIcon className={styles.themeIcon} />
