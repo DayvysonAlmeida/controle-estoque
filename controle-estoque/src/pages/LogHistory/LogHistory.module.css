@@ -1,45 +1,73 @@
-/* LogHistory.module.css */
-
+/* src/pages/LogHistory/LogHistory.module.css */
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #ffffff;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
-  
-  h1 {
-    font-size: 2rem;
-    margin-bottom: 20px;
-    color: #333;
-  }
-  
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  
-  .table th,
-  .table td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: left;
-  }
-  
-  .table th {
-    background-color: #f3f3f3;
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .table tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-  
-  .table tbody tr:hover {
-    background-color: #eaeaea;
-  }
-  
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+}
+
+.heading {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: var(--textprimary);
+}
+
+/* --- ESTILO DA TABELA PROFISSIONAL --- */
+.tableContainer {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--bordercolor);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.th, .td {
+  padding: 16px 20px;
+  vertical-align: middle;
+  text-align: left;
+  border-bottom: 1px solid var(--bordercolor);
+}
+
+.th {
+  background-color: var(--bgprimary);
+  color: var(--textsecondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: var(--bgprimary);
+}
+
+.table tbody tr:hover {
+  background-color: var(--btnsecondaryhover);
+}
+
+/* --- ESTILOS DA PAGINAÇÃO --- */
+.itemsPerPage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0;
+  font-size: 14px;
+}
+.itemsPerPage label {
+  font-weight: 500;
+  color: var(--textsecondary);
+}
+.itemsPerPage select {
+  background: var(--bgcard);
+  border: 1px solid var(--bordercolor);
+  color: var(--textprimary);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}

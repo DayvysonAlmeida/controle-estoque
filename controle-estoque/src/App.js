@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
 import Login from "./pages/Login/Login";
@@ -14,64 +15,91 @@ import UserEdit from "./pages/UserEdit/UserEdit";
 import LogHistory from "./pages/LogHistory/LogHistory";
 import AccountMenu from "./components/AccountMenu/AccountMenu";
 import LeftSidebar from "./components/LeftSidebar/LeftSidebar";
-import { ThemeProvider, useTheme } from "./theme/theme";
+import { ThemeProvider } from "./theme/theme";
 import GlobalStyle from "./GlobalStyles";
+// --- O QUE MUDOU: IMPORTAÇÕES RESTAURADAS ---
 import SessionManager from "./components/SessionManager";
 import { NotificationProvider } from './contexts/NotificationProvider';
 import api from "./services/api";
 import 'rsuite/dist/rsuite.min.css';
+import './App.css';
 
-function AppWrapper() {
-  const location = useLocation();
-  const isLoggedIn = location.pathname !== "/";
-  const { colors } = useTheme();
-
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [profile, setProfile] = useState(null);
-  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+// Hook customizado para detetar se a tela é de telemóvel
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
-    const handleResize = () => setScreenWidth(window.innerWidth);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  return isMobile;
+};
+
+function AppWrapper() {
+  const location = useLocation();
+  const isLoggedIn = location.pathname !== "/";
+  const isMobile = useIsMobile();
+
+  // Lógica para o fundo da página de Login
   useEffect(() => {
-    async function fetchProfile() {
-      try {
-        const res = await api.get("profile/");
-        setProfile(res.data);
-      } catch (error) {
-        console.error("Erro ao buscar perfil:", error);
-      }
+    if (location.pathname === '/') {
+      document.body.classList.add('login-active-background');
     }
-    if (isLoggedIn) fetchProfile();
+    return () => {
+      document.body.classList.remove('login-active-background');
+    };
+  }, [location.pathname]);
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(!isMobile);
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      api.get("profile/").then(res => setProfile(res.data)).catch(err => console.error("Erro ao buscar perfil:", err));
+    }
   }, [isLoggedIn]);
 
-  const contentClass = [
-    "app-content",
-    screenWidth < 768
-      ? isSidebarCollapsed ? "mobileClosed" : "mobileOpen"
-      : isSidebarCollapsed ? "collapsed" : "expanded"
-  ].join(" ");
+  useEffect(() => {
+    if (isMobile) {
+      setIsSidebarOpen(false);
+    }
+  }, [isMobile]);
+
+  useEffect(() => {
+    if (isMobile) {
+      setIsSidebarOpen(false);
+    }
+  }, [location.pathname, isMobile]);
+
+  const sidebarState = isMobile ? false : isSidebarOpen;
+
+  const toggleSidebar = () => {
+    if (!isMobile) {
+      setIsSidebarOpen(!isSidebarOpen);
+    }
+  };
+
+  const containerClass = isLoggedIn 
+    ? (sidebarState ? 'sidebarExpanded' : 'sidebarCollapsed')
+    : 'login-page';
 
   return (
-    <div
-      className="app-container"
-      style={{
-        backgroundColor: colors.background,
-        color: colors.text,
-      }}
-    >
+    <div className={`appContainer ${containerClass}`}>
       {isLoggedIn && profile && (
-        <LeftSidebar
-          estoques={profile.estoques || []}
-          isCollapsed={isSidebarCollapsed}
-          toggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-        />
+        <>
+          {isMobile && isSidebarOpen && <div className="backdrop" onClick={() => setIsSidebarOpen(false)} />}
+          <LeftSidebar
+            isSidebarOpen={sidebarState}
+            toggleSidebar={toggleSidebar}
+          />
+        </>
       )}
 
-      <div className={contentClass}>
+      <main className="contentWrapper">
         {isLoggedIn && <AccountMenu />}
         <Routes>
           <Route path="/" element={<Login />} />
@@ -87,7 +115,7 @@ function AppWrapper() {
           <Route path="/usuarios/:userId/editar" element={<UserEdit />} />
           <Route path="/logs" element={<LogHistory />} />
         </Routes>
-      </div>
+      </main>
     </div>
   );
 }

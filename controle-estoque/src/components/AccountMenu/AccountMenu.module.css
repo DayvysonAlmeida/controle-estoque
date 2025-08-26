@@ -1,27 +1,42 @@
 /* AccountMenu.module.css */
 .accountMenuContainer {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    z-index: 100;
-  }
-  
-  .accountMenuBox {
-    display: flex;
-    align-items: center;
-    text-align: center;
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  }
-  
+  position: fixed;
+  top: 10px;
+  right: 20px; /* Aumenta o espaço da borda */
+  z-index: 1050; /* Garante que fique por cima de tudo */
+}
+
+.accountMenuBox {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  padding: 8px; /* Ligeiramente mais pequeno */
+  border-radius: 50px; /* Deixa o container em forma de pílula */
+  background-color: var(--bgcard);
+  border: 1px solid var(--bordercolor);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.accountMenuText {
+  margin: 0 8px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--textprimary);
+}
+
+.accountMenuButton {
+  margin-left: 4px;
+}
+
+/* Responsividade para Telemóvel */
+@media (max-width: 480px) {
   .accountMenuText {
-    margin-right: 16px;
-    font-weight: bold;
-    font-size: 16px;
+    display: none;
   }
-  
-  .accountMenuButton {
-    margin-left: 16px;
+  .accountMenuBox {
+    padding: 5px;
   }
-  
+  .accountMenuContainer {
+    right: 10px;
+  }
+}

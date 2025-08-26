@@ -1,10 +1,11 @@
+// src/pages/EquipmentHistory/EquipmentHistory.js
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../services/api";
 import styles from "./EquipmentHistory.module.css";
 
 const EquipmentHistory = () => {
-  const { equipamentoId } = useParams(); // Obtém o ID do equipamento via rota
+  const { equipamentoId } = useParams();
   const [equipment, setEquipment] = useState(null);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,21 +14,19 @@ const EquipmentHistory = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        // Obtém os detalhes do equipamento
-        const equipmentRes = await api.get(`equipments/${equipamentoId}/`);
+        const [equipmentRes, historyRes] = await Promise.all([
+          api.get(`equipments/${equipamentoId}/`),
+          api.get("equipment-history/", { params: { equipment: equipamentoId } })
+        ]);
+        
         setEquipment(equipmentRes.data);
 
-        // Obtém o histórico do equipamento (considerando paginação, se existir)
-        const historyRes = await api.get("equipment-history/", {
-          params: { equipment: equipamentoId },
-        });
-        // Se o endpoint tiver paginação, os dados podem vir em historyRes.data.results
         const historyData = historyRes.data.results || historyRes.data;
-        // Ordena de forma decrescente pela data/hora (mais recente primeiro)
-        historyData.sort(
-          (a, b) => new Date(b.data_hora) - new Date(a.data_hora)
-        );
-        setHistory(historyData);
+        if (Array.isArray(historyData)) {
+            historyData.sort((a, b) => new Date(b.data_hora) - new Date(a.data_hora));
+        }
+        setHistory(Array.isArray(historyData) ? historyData : []);
+
       } catch (err) {
         console.error("Erro ao buscar dados:", err);
         setError("Erro ao carregar os dados");
@@ -39,79 +38,53 @@ const EquipmentHistory = () => {
   }, [equipamentoId]);
 
   if (loading) {
-    return <p className={styles.loading}>Carregando dados do equipamento...</p>;
+    return <div className={styles.container}><p>A carregar dados do equipamento...</p></div>;
   }
 
   if (error) {
-    return <p className={styles.error}>{error}</p>;
+    return <div className={styles.container}><p>{error}</p></div>;
   }
 
   return (
     <div className={styles.container}>
       {equipment && (
-        <>
+        <div className={styles.detailsCard}>
           <h2 className={styles.heading}>Detalhes do Equipamento</h2>
-          <div className={styles.details}>
-            <p>
-              <strong>Nome:</strong> {equipment.nome}
-            </p>
-            <p>
-              <strong>Modelo:</strong> {equipment.modelo}
-            </p>
-            <p>
-              <strong>Marca:</strong> {equipment.marca}
-            </p>
-            <p>
-              <strong>Tombamento:</strong> {equipment.tombamento}
-            </p>
-            <p>
-              <strong>Status:</strong> {equipment.status}
-            </p>
-            <p>
-              <strong>Descrição:</strong> {equipment.descricao}
-            </p>
-            <p>
-              <strong>Categoria:</strong> {equipment.categoria}
-            </p>
+          <div className={styles.detailsGrid}>
+            <p><strong>Nome:</strong> {equipment.nome}</p>
+            <p><strong>Modelo:</strong> {equipment.modelo}</p>
+            <p><strong>Marca:</strong> {equipment.marca}</p>
+            <p><strong>Tombamento:</strong> {equipment.tombamento || "N/A"}</p>
+            <p><strong>Status:</strong> {equipment.status}</p>
+            <p><strong>Categoria:</strong> {equipment.categoria}</p>
           </div>
-        </>
+          {equipment.descricao && <p className={styles.description}><strong>Descrição:</strong> {equipment.descricao}</p>}
+        </div>
       )}
 
-      <h2 className={styles.subHeading}>Histórico de Movimentações</h2>
+      <h2 className={`${styles.heading} ${styles.tableTitle}`}>Histórico de Movimentações</h2>
       {history.length === 0 ? (
-        <p className={styles.noHistory}>
-          Nenhum histórico encontrado para este equipamento.
-        </p>
+        <p>Nenhum histórico encontrado para este equipamento.</p>
       ) : (
         <div className={styles.tableContainer}>
           <table className={styles.table}>
             <thead>
               <tr>
-                <th className={styles.tableHeader}>Data/Hora</th>
-                <th className={styles.tableHeader}>Local</th>
-                <th className={styles.tableHeader}>Usuário</th>
-                <th className={styles.tableHeader}>Status</th>
-                <th className={styles.tableHeader}>Alterações</th>
+                <th className={styles.th}>Data/Hora</th>
+                <th className={styles.th}>Local</th>
+                <th className={styles.th}>Utilizador</th>
+                <th className={styles.th}>Status</th>
+                <th className={styles.th}>Alterações</th>
               </tr>
             </thead>
             <tbody>
               {history.map((entry) => (
-                <tr key={entry.id} className={styles.tableRow}>
-                  <td className={styles.tableCell}>
-                    {new Date(entry.data_hora).toLocaleString()}
-                  </td>
-                  <td className={styles.tableCell}>
-                    {entry.local || "-"}
-                  </td>
-                  <td className={styles.tableCell}>
-                    {entry.usuario && typeof entry.usuario === "object"
-                      ? entry.usuario.username || entry.usuario.nome
-                      : entry.usuario}
-                  </td>
-                  <td className={styles.tableCell}>
-                    {entry.status || "-"}
-                  </td>
-                  <td className={styles.tableCell}>{entry.alteracoes}</td>
+                <tr key={entry.id}>
+                  <td className={styles.td}>{new Date(entry.data_hora).toLocaleString()}</td>
+                  <td className={styles.td}>{entry.local || "-"}</td>
+                  <td className={styles.td}>{entry.usuario?.username || entry.usuario || "-"}</td>
+                  <td className={styles.td}>{entry.status || "-"}</td>
+                  <td className={styles.td}>{entry.alteracoes}</td>
                 </tr>
               ))}
             </tbody>

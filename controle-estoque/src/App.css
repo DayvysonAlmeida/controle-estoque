@@ -1,66 +1,46 @@
-/* Layout principal do App */
-.app-container {
-  display: flex;
-  min-height: 100vh;
-  transition: background-color 0.3s ease, color 0.3s ease;
+/* src/App.css */
+:root {
+  --sidebar-width-expanded: 240px;
+  --sidebar-width-collapsed: 80px;
+  --header-height: 80px;
 }
 
-/* Conteúdo principal (wrapper das páginas) */
-.app-content {
-  flex: 1;
+.appContainer {
+  display: flex;
+  flex-grow: 1; /* Essencial para ocupar a altura do #root */
+  min-height: 100%;
+  background-color: var(--background);
+}
+
+/* --- Classe especial para a página de Login --- */
+.appContainer.login-page {
+  /* Quando esta classe está presente, o fundo é FORÇADO a ser escuro */
+  background-color: #1F2937 !important;
+}
+
+.contentWrapper {
+  flex-grow: 1;
   padding: 20px;
+  padding-top: var(--header-height);
   transition: margin-left 0.3s ease;
+  width: 100%;
+  box-sizing: border-box; /* Previne problemas de layout com o padding */
 }
 
 /* Desktop */
-.app-content.expanded {
-  margin-left: 200px;
+.sidebarExpanded .contentWrapper {
+  margin-left: var(--sidebar-width-expanded);
+}
+.sidebarCollapsed .contentWrapper {
+  margin-left: var(--sidebar-width-collapsed);
 }
 
-.app-content.collapsed {
-  margin-left: 60px;
-}
-
-/* Mobile */
-.app-content.mobileOpen {
-  margin-left: 70%;
-  max-width: 300px;
-}
-
-.app-content.mobileClosed {
-  margin-left: 0;
-}
-
-/* Header global */
-.header {
-  background-color: var(--primary, #3399cc);
-  color: var(--buttonText, #ffffff);
-  padding: 10px 20px;
-  text-align: center;
-}
-
-/* Botão padrão */
-.btn {
-  padding: 10px 20px;
-  background-color: var(--primary, #3399cc);
-  color: var(--buttonText, #ffffff);
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.btn:hover {
-  background-color: var(--hoverBackground, #2878a4);
-}
-
-/* Responsividade geral */
+/* Telemóvel */
 @media (max-width: 768px) {
-  .app-container {
-    flex-direction: column;
-  }
-  
-  .app-content {
-    padding: 15px;
+  .sidebarExpanded .contentWrapper,
+  .sidebarCollapsed .contentWrapper {
+    margin-left: var(--sidebar-width-collapsed);
+    padding: 10px;
+    padding-top: var(--header-height);
   }
 }

@@ -1,65 +1,44 @@
+/* EquipmentList.module.css */
 .container {
-  padding: 10px;
+  padding: 20px;
   max-width: 1500px;
   margin: 0 auto;
-  border-radius: 8px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  background-color: var(--background, #f9f9f9);
 }
 
 .heading {
-  font-size: 24px;
+  font-size: 28px;
   margin-bottom: 20px;
-  font-weight: bold;
-  color: var(--primary, #58bc82);
-}
-
-.filters {
-  margin-bottom: 20px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.input,
-.select {
-  padding: 10px;
-  border: 1px solid var(--border, #ddd);
-  border-radius: 5px;
-  box-sizing: border-box;
-  height: 40px;
-  flex: 1;
-  min-width: 200px;
-}
-
-.select {
-  min-width: 180px;
+  font-weight: 700;
+  color: var(--textprimary);
 }
 
 .button {
   padding: 10px 20px;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
-  background-color: var(--btnprimarybg, #58bc82);
-  color: var(--buttonText, #fff);
-  transition: background-color 0.2s ease-in-out;
+  background-color: var(--btnprimarybg);
+  color: var(--btnprimarytext);
+  transition: all 0.2s ease-in-out;
 }
 
 .button:hover {
-  background-color: #45a56b;
+  background-color: var(--btnprimaryhover);
+  transform: translateY(-2px);
 }
+
+/* --- ESTILO DE TABELA COM FOCO EM UX --- */
 
 .tableContainer {
   width: 100%;
   overflow-x: auto;
   margin-top: 20px;
-  border-radius: 8px;
-  box-shadow: 0px 2px 6px rgba(0,0,0,0.08);
-  background: #fff;
+  border: 1px solid var(--bordercolor);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 .table {
@@ -68,51 +47,95 @@
   font-size: 14px;
 }
 
-.th {
-  padding: 12px;
-  border: 1px solid var(--border, #ddd);
+.th, .td {
+  padding: 16px 20px;
+  vertical-align: middle;
   text-align: left;
-  background-color: var(--primary, #58bc82);
-  color: #fff;
-  font-weight: bold;
+  border-bottom: 1px solid var(--bordercolor);
 }
 
-.td {
-  padding: 10px;
-  border: 1px solid var(--border, #ddd);
-  color: var(--text, #333);
+.th {
+  background-color: var(--bgprimary);
+  color: var(--textsecondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 12px;
 }
 
-.table tr:hover {
-  background-color: #f5f5f5;
-  transition: background-color 0.2s ease;
+.table tbody tr:nth-child(even) {
+  background-color: var(--bgprimary);
 }
 
-.actionButton {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 5px;
+.table tbody tr:hover {
+  background-color: var(--btnsecondaryhover);
+}
+
+.centerAlign {
+  text-align: center;
+}
+
+.equipmentLink {
+  color: var(--btnprimarybg);
   cursor: pointer;
   font-weight: 600;
-  margin-right: 8px;
-  font-size: 13px;
-  background-color: var(--btnprimarybg, #58bc82);
-  color: var(--buttonText, #fff);
+}
+.equipmentLink:hover { text-decoration: underline; }
+
+.subtleText {
+  font-size: 12px;
+  color: var(--textsecondary);
+}
+
+/* --- BADGES DE STATUS --- */
+.statusBadge {
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-weight: 600;
+  font-size: 12px;
+  display: inline-block;
+  color: #fff;
+}
+.statusAtivo { background-color: #10B981; }
+.statusManutencao { background-color: #F59E0B; }
+.statusInativo { background-color: #6B7280; }
+.statusSubstituida { background-color: #3B82F6; }
+.statusBackup { background-color: #8B5CF6; }
+
+/* --- BOTÕES DE AÇÃO COM ÍCONES --- */
+.actionButton {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  margin: 0 4px;
   transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.actionButton:hover {
-  background-color: #45a56b;
-  transform: scale(1.05);
+.editButton {
+  background-color: var(--btnsecondarybg);
+  color: var(--btnprimarybg);
+  border: 1px solid var(--bordercolor);
+}
+.editButton:hover {
+  background-color: var(--btnsecondaryhover);
+  transform: scale(1.1);
 }
 
-.input:focus,
-.select:focus {
-  outline: none;
-  border-color: var(--primary, #58bc82);
-  transition: border-color 0.2s ease-in-out;
+.deleteButton {
+  background-color: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+.deleteButton:hover {
+  background-color: #fecaca;
+  transform: scale(1.1);
 }
 
+/* --- PAGINAÇÃO E ITENS --- */
 .itemsPerPage {
   display: flex;
   align-items: center;
@@ -120,90 +143,22 @@
   margin: 16px 0;
   font-size: 14px;
 }
-
-.itemsPerPage label {
-  font-weight: 500;
-  color: #444;
-}
-
+.itemsPerPage label { font-weight: 500; color: var(--textsecondary); }
 .itemsPerPage select {
-  background: #fff;
-  border: 1px solid #ccc;
+  background: var(--bgcard);
+  border: 1px solid var(--bordercolor);
+  color: var(--textprimary);
   border-radius: 6px;
   padding: 6px 12px;
   font-size: 14px;
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.itemsPerPage select:focus,
-.itemsPerPage select:hover {
-  border-color: var(--primary, #58bc82);
-  box-shadow: 0 0 4px rgba(88, 188, 130, 0.4);
-}
 
-/* Checkbox alinhado ao centro */
-.table .td input[type="checkbox"] {
-  display: flex;
-  margin: auto;
-  cursor: pointer;
-  width: 16px;
-  height: 16px;
-}
 
-/* 🔹 Responsividade para telas menores */
 @media (max-width: 768px) {
-  .container {
-    padding: 5px;
-  }
-
-  .heading {
-    font-size: 20px;
-    margin-bottom: 15px;
-  }
-
-  .filters {
-    flex-direction: column;
-    margin-bottom: 15px;
-  }
-
-  .input,
-  .select {
-    min-width: 100%;
-    padding: 8px;
-    height: auto;
-  }
-
-  .button {
-    padding: 8px 12px;
-    margin-bottom: 15px;
-    font-size: 0.9rem;
-    transition: background-color 0.2s ease-in-out;
-  }
-
   .table {
-    font-size: 12px;
-  }
-
-  .th,
-  .td {
-    padding: 8px;
-    font-size: 0.9rem;
-  }
-
-  .actionButton {
-    padding: 5px 8px;
-    font-size: 12px;
-    margin-right: 4px;
-  }
-
-  .itemsPerPage {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-  }
-
-  .itemsPerPage select {
-    width: 100%;
+    display: block;
+    overflow-x: auto; /* Permite scroll horizontal na tabela */
   }
 }
