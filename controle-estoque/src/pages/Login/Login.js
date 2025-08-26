@@ -7,6 +7,8 @@ import logo from "../../assets/logo.png";
 import { useNotification } from "../../contexts/NotificationProvider";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -15,8 +17,6 @@ const Login = () => {
   
   const navigate = useNavigate();
   const { showNotification } = useNotification();
-
-  // O useEffect para mudar o fundo foi REMOVIDO. O CSS vai tratar disso.
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,31 +35,39 @@ const Login = () => {
     }
   };
 
+  const handleForgotPassword = () => {
+    // No futuro, pode adicionar aqui a lógica para abrir um modal de recuperação de senha
+    showNotification("Funcionalidade de recuperação de senha ainda não implementada.", "info");
+  };
+
   return (
     <div className={styles.container}>
       <form className={styles.loginForm} onSubmit={handleSubmit}>
         <div className={styles.logoContainer}>
           <img src={logo} alt="Logo Controle Estoque" className={styles.logo} />
-        </div>
-        
+        </div>                
         <div className={styles.inputGroup}>
-          <label htmlFor="username">Utilizador</label>
-          <input
-            type="text"
-            id="username"
-            placeholder="Digite o seu utilizador"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
+          <label htmlFor="username">Usuário</label>
+          <div className={styles.inputWrapper}>
+            <PersonOutlineIcon className={styles.inputIcon} />
+            <input
+              type="text"
+              id="username"
+              placeholder="Digite seu usuário"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
         </div>
         
         <div className={styles.inputGroup}>
           <label htmlFor="password">Senha</label>
-          <div className={styles.passwordWrapper}>
+          <div className={styles.inputWrapper}>
+            <LockOutlinedIcon className={styles.inputIcon} />
             <input
               type={showPassword ? "text" : "password"}
               id="password"
-              placeholder="Digite a sua senha"
+              placeholder="Digite sua senha"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -72,6 +80,13 @@ const Login = () => {
         <button className={styles.submit} type="submit">
           Entrar
         </button>
+
+        {/* --- O QUE MUDOU: <a> trocado por <button> --- */}
+        <div className={styles.extraLinks}>
+          <button type="button" className={styles.linkButton} onClick={handleForgotPassword}>
+            Esqueceu a sua senha?
+          </button>
+        </div>
       </form>
     </div>
   );
