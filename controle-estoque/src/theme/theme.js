@@ -14,8 +14,11 @@ export const ThemeProvider = ({ children }) => {
   const colors = useMemo(() => (
     theme === "light"
       ? {
-          // Light Theme (correto)
-          background: "#f9f9f9",
+          // --- O QUE MUDOU: Cores de fundo unificadas ---
+          background: "#FFFFFF",      // Fundo principal agora é branco puro
+          bgcard: "#FFFFFF",          // Fundo dos cards é branco puro
+          bgprimary: "#F9FAFB",        // Fundo de "hover" e cabeçalhos de tabela (mantido para contraste subtil)
+          
           text: "#333333",
           primary: "#58bc82",
           secondary: "#666e9a",
@@ -30,8 +33,6 @@ export const ThemeProvider = ({ children }) => {
           linkHoverColor: "#45a56b",
           buttonHover: "#45a56b",
           signupText: "#333333",
-          bgcard: "#FFFFFF",
-          bgprimary: "#F9FAFB",
           bordercolor: "#E5E7EB",
           textprimary: "#111827",
           textsecondary: "#6B7280",
@@ -51,10 +52,8 @@ export const ThemeProvider = ({ children }) => {
           chartcolor5: "#8B5CF6",
         }
       : {
-          // Dark Theme (corrigido)
+          // Dark Theme (sem alterações)
           background: "#282c34",
-          // --- O QUE MUDOU ---
-          // A cor do texto principal foi corrigida de vermelho para um branco suave
           text: "#F9FAFB",
           primary: "#009929",
           secondary: "#E76F00",
