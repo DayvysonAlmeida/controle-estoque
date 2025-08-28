@@ -4,22 +4,27 @@ from .models import Equipment, EquipmentHistory, CustomUser, Estoque, LogEquipam
 
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
-    list_display = ('username', 'email', 'nome', 'funcao', 'role', 'get_groups')
-    list_filter = ('role', 'estoques', 'groups')
-    
+    list_display = (
+        'username', 'email', 'nome', 'funcao', 'role',
+        'get_groups', 'get_estoques'
+    )
+    list_filter = ('role', 'estoques', 'groups',)
+    filter_horizontal = ('estoques', 'groups',)
+
     fieldsets = UserAdmin.fieldsets + (
         (None, {'fields': ('nome', 'funcao', 'estoques', 'role')}),
     )
-    
     add_fieldsets = UserAdmin.add_fieldsets + (
         (None, {'fields': ('nome', 'funcao', 'estoques', 'role')}),
     )
 
-    filter_horizontal = ('estoques', 'groups',)
-
     def get_groups(self, obj):
         return ", ".join([g.name for g in obj.groups.all()])
     get_groups.short_description = 'Grupos'
+
+    def get_estoques(self, obj):
+        return ", ".join([e.nome for e in obj.estoques.all()])
+    get_estoques.short_description = 'Estoques'
 
 class EquipmentHistoryAdmin(admin.ModelAdmin):
     model = EquipmentHistory

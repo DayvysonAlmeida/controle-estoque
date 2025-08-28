@@ -1,23 +1,37 @@
-/* App.css */
-
 /* Layout principal do App */
 .app-container {
   display: flex;
-  flex-direction: row;
   min-height: 100vh;
-  background-color: var(--background, #f4f4f4);
-  color: var(--text, #222222);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Conteúdo principal (o wrapper que envolve os elementos renderizados nas páginas) */
+/* Conteúdo principal (wrapper das páginas) */
 .app-content {
   flex: 1;
   padding: 20px;
   transition: margin-left 0.3s ease;
 }
 
-/* Header global, se necessário */
+/* Desktop */
+.app-content.expanded {
+  margin-left: 200px;
+}
+
+.app-content.collapsed {
+  margin-left: 60px;
+}
+
+/* Mobile */
+.app-content.mobileOpen {
+  margin-left: 70%;
+  max-width: 300px;
+}
+
+.app-content.mobileClosed {
+  margin-left: 0;
+}
+
+/* Header global */
 .header {
   background-color: var(--primary, #3399cc);
   color: var(--buttonText, #ffffff);
@@ -25,35 +39,7 @@
   text-align: center;
 }
 
-/* Exemplo de estilização para o logotipo (caso exista) */
-.app-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .app-logo {
-    animation: app-logo-spin infinite 20s linear;
-  }
-}
-
-/* Definição da animação do logotipo */
-@keyframes app-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Estilos para links */
-.app-link {
-  color: var(--linkColor, #61dafb);
-  text-decoration: none;
-}
-
-/* Exemplo de botão padrão (pode ser reutilizado em todo o app) */
+/* Botão padrão */
 .btn {
   padding: 10px 20px;
   background-color: var(--primary, #3399cc);
@@ -68,14 +54,13 @@
   background-color: var(--hoverBackground, #2878a4);
 }
 
-/* Media queries para responsividade geral */
+/* Responsividade geral */
 @media (max-width: 768px) {
   .app-container {
     flex-direction: column;
   }
   
   .app-content {
-    margin-left: 0;
     padding: 15px;
   }
 }

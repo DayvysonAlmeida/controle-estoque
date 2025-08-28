@@ -12,7 +12,7 @@ ROLE_CHOICES = (
 # Modelo Estoque
 class Estoque(models.Model):
     nome = models.CharField(max_length=100)
-    descricao = models.TextField(blank=True)
+    descricao = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.nome
@@ -37,13 +37,14 @@ class Equipment(models.Model):
     nome = models.CharField(max_length=100)
     modelo = models.CharField(max_length=100)
     marca = models.CharField(max_length=100)
-    categoria = models.CharField(max_length=100)
-    tombamento = models.IntegerField(unique=True)   # Garantindo unicidade
+    tombamento = models.CharField(max_length=50, blank=True, null=True)
+    serialnumber = models.CharField(max_length=100)
     status = models.CharField(max_length=50)
-    descricao = models.TextField(blank=True)
-    serialnumber = models.CharField(max_length=30, unique=True)   # Garantindo unicidade
-    estoque = models.ForeignKey(Estoque, on_delete=models.CASCADE, null=True, blank=True)
-    
+    descricao = models.TextField()
+    categoria = models.CharField(max_length=50)
+    estoque = models.ForeignKey(Estoque, on_delete=models.CASCADE)
+    ip = models.CharField(max_length=45, blank=True, null=True)  # opcional
+    sem_tombamento = models.BooleanField(default=False)
     tracker = FieldTracker()  # Monitoramento de mudanças
     
     def __str__(self):

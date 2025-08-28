@@ -1,46 +1,56 @@
-# Não é obrigatório informar o "version:" em versões recentes do Docker Compose.
 services:
+  # ---- BACKEND (Django) ----
   web:
-    build: ./backend          # Caminho para o Dockerfile do Django
+    build: ./backend
     container_name: django_app
     command: gunicorn --bind 0.0.0.0:4000 mybackend.wsgi:application
     volumes:
       - ./backend:/app
     ports:
       - "4000:4000"
-    depends_on:
-      - mysql
+    # depends_on:
+    #   - mysql
     env_file:
       - .env
 
-  mysql:
-    image: mysql:8.0
-    container_name: mysql_db
-    restart: always
-    env_file:
-    - ./.env
-    ports:
-      - "3307:3306"
-    volumes:
-      - ./mysql_data:/var/lib/mysql
+  # mysql:
+  #   image: mysql:8.0
+  #   container_name: mysql_db
+  #   restart: always
+  #   env_file:
+  #     - ./.env
+  #   ports:
+  #     - "3307:3306"
+  #   volumes:
+  #     - mysql_data:/var/lib/mysql
 
-      
-  frontend:
-    build: ./controle-estoque       # Caminho para o Dockerfile do React
-    container_name: react_app
-    ports:
-      - "3000:80"
+  # ---- FRONTEND DESENVOLVIMENTO ----
+  frontend-dev:
+    build:
+      context: ./controle-estoque
+      target: dev
+    container_name: react_dev
     volumes:
-      - ./controle-estoque:/app      # Ajuste aqui a montagem do volume para refletir o diretório do código fonte
+      - ./controle-estoque:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
     environment:
-      - CHOKIDAR_USEPOLLING=true     # Ativa o polling para o watcher
-      # Se necessário, ajuste outras variáveis como CHOKIDAR_INTERVAL, por exemplo:
-      # - CHOKIDAR_INTERVAL=100
-    command: npm start                # Comando para iniciar o React em modo de desenvolvimento
+      - CHOKIDAR_USEPOLLING=true
     depends_on:
       - web
     restart: always
 
-volumes:
-  mysql_data:
-    driver: local
+  # ---- FRONTEND PRODUÇÃO ----
+  frontend-prod:
+    build:
+      context: ./controle-estoque
+      target: prod
+    container_name: react_prod
+    ports:
+      - "3000:80"
+    restart: always
+
+# volumes:
+#   mysql_data:
+#     driver: local

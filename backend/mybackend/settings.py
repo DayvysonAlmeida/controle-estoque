@@ -106,7 +106,7 @@ REST_FRAMEWORK = {
 CORS_ORIGIN_ALLOW_ALL = True  # Em produção, considere configurar CORS_ALLOWED_ORIGINS
 
 CORS_ALLOWED_ORIGINS = [
-    "http://192.168.22.6:3000",  # IP do frontend
+    "http://192.168.20.14:3000",  # IP do frontend
     "http://localhost:3000",
 ]
 

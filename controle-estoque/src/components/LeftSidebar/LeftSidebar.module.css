@@ -1,3 +1,5 @@
+/* LeftSidebar.module.css */
+
 /* Container principal */
 .sidebarContainer {
   position: fixed;
@@ -5,28 +7,48 @@
   left: 0;
   bottom: 0;
   overflow-y: auto;
-  transition: width 0.3s ease;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.884);
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.88);
+  transition: all 0.3s ease;
   z-index: 1000;
+}
+
+/* Estados do sidebar */
+.collapsed {
+  width: 60px;
+}
+
+.expanded {
+  width: 200px;
+}
+
+.mobileOpen {
+  width: 70%;
+  max-width: 300px;
+}
+
+.mobileClosed {
+  width: 0;
 }
 
 /* Header do sidebar */
 .header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 15px;
 }
 
-/* Área para o título */
+/* Área do logo */
 .headerLeft {
   flex: 1;
 }
 
-/* Área para o botão toggle */
+/* Área do botão toggle */
 .headerRight {
-  /* Aqui o botão ficará sempre visível; podemos centralizá-lo verticalmente se for linha, ou permitir que fique abaixo se for coluna */
+  display: flex;
+  align-items: center;
 }
-
 
 /* Botão toggle */
 .toggleButton {
@@ -53,10 +75,11 @@
   font-size: 1rem;
   cursor: pointer;
   transition: background 0.2s;
+  color: inherit;
 }
 
 .navItem:hover {
-  background: rgba(26, 20, 20, 0.39);
+  background: rgba(26, 20, 20, 0.2);
 }
 
 .active {
@@ -64,29 +87,34 @@
   font-weight: bold;
 }
 
-/* LeftSidebar.module.css */
+/* Logos */
 .logo {
-  max-width: 150px; /* ajuste conforme necessário */
+  max-width: 150px;
   height: auto;
 }
 
 .logoCollapsed {
-  max-width: 40px; /* para quando o menu estiver colapsado */
+  max-width: 40px;
   height: auto;
 }
-
 
 /* Responsividade: telas menores */
 @media (max-width: 768px) {
   .sidebarContainer {
-    width: 70%;
-    max-width: 300px;
     position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
     z-index: 1100;
+    height: 100vh;
+  }
+
+  .collapsed {
+    width: 0;
+  }
+
+  .expanded {
+    width: 70%;
+    max-width: 300px;
   }
 }
-
-
