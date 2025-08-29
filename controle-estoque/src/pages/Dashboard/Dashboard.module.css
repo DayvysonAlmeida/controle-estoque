@@ -2,7 +2,6 @@
 .dashboardContainer {
   padding: 20px;
   background-color: var(--background);
-  /* Garante que o container não cause overflow */
   width: 100%;
   box-sizing: border-box;
 }
@@ -48,7 +47,8 @@
 
 .metricsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  /* Começa com 6 colunas em telas grandes */
+  grid-template-columns: repeat(6, 1fr);
   gap: 20px;
   margin-bottom: 30px;
 }
@@ -81,12 +81,10 @@
   color: var(--textprimary);
 }
 
-/* --- A CORREÇÃO ESTÁ AQUI --- */
 .chartsGrid {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 30px;
-  /* Garante que a grelha não exceda a largura do seu contentor pai */
   max-width: 100%; 
 }
 
@@ -99,7 +97,6 @@
   height: 400px;
   display: flex;
   flex-direction: column;
-  /* Impede que o conteúdo do card (o gráfico) transborde */
   overflow: hidden; 
 }
 .chartCard h3 {
@@ -116,15 +113,29 @@
   color: var(--textsecondary);
 }
 
-@media (max-width: 900px) {
-  .chartsGrid {
-    grid-template-columns: 1fr;
+/* --- REGRAS DE RESPONSIVIDADE MELHORADAS --- */
+
+/* Para ecrãs médios (ex: tablets na vertical) */
+@media (max-width: 1200px) {
+  .metricsGrid {
+    grid-template-columns: repeat(3, 1fr); /* 3 cards por linha */
   }
 }
 
-@media (max-width: 768px) {
+/* Para ecrãs mais pequenos (ex: tablets na vertical, telemóveis grandes) */
+@media (max-width: 900px) {
+  .chartsGrid {
+    grid-template-columns: 1fr; /* Gráficos em coluna única */
+  }
   .metricsGrid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr); /* 2 cards por linha */
+  }
+}
+
+/* Para a maioria dos telemóveis */
+@media (max-width: 768px) {
+  .dashboardContainer {
+    padding: 15px; /* Menos padding */
   }
   .header {
     flex-direction: column;
@@ -132,11 +143,18 @@
   }
 }
 
-@media (max-width: 600px) {
+/* Para ecrãs de telemóvel muito estreitos */
+@media (max-width: 480px) {
+  .metricsGrid {
+    grid-template-columns: 1fr; /* Apenas 1 card por linha */
+  }
   .dashboardTitle {
     font-size: 24px;
   }
   .cardValue {
     font-size: 32px;
+  }
+  .card {
+    padding: 16px;
   }
 }

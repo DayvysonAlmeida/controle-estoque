@@ -1,24 +1,28 @@
 /* src/components/EquipmentFilters/EquipmentFilters.module.css */
+
+/* --- A CORREÇÃO PRINCIPAL ESTÁ AQUI --- */
 .filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+  display: grid;
+  /* Cria colunas automáticas com uma largura mínima de 180px */
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
   margin-bottom: 20px;
-  align-items: center; /* Alinha verticalmente os itens */
+  align-items: end; /* Alinha os itens na base */
 }
 
 .input,
 .select {
-  padding: 10px 14px; /* Aumenta o padding para uma melhor aparência */
+  padding: 10px 14px;
   font-size: 14px;
   border: 1px solid var(--bordercolor); 
   border-radius: 8px;
-  width: 180px;
+  width: 100%; /* Ocupa 100% da coluna da grelha */
   background-color: var(--bgcard); 
   color: var(--textprimary);
   transition: border-color 0.2s, box-shadow 0.2s;
   box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-  height: 42px; /* Altura fixa para todos os campos */
+  height: 42px;
+  box-sizing: border-box; /* Garante que o padding não afete a largura */
 }
 
 .input:focus,
@@ -28,20 +32,21 @@
   box-shadow: 0 0 0 3px rgba(88, 188, 130, 0.3);
 }
 
-/* --- O QUE MUDOU: ESTILO DO BOTÃO COM ÍCONE --- */
 .button {
-  padding: 0 16px; /* Padding horizontal */
-  height: 42px; /* Mesma altura dos inputs */
+  padding: 0 16px;
+  height: 42px;
   background-color: var(--btnsecondarybg);
   color: var(--btnsecondarytext);
-  font-weight: 600; /* Ligeiramente mais forte */
+  font-weight: 600;
   border: 1px solid var(--bordercolor);
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.2s ease;
   display: inline-flex;
   align-items: center;
-  gap: 6px; /* Espaço entre o ícone e o texto */
+  gap: 6px;
+  /* Faz com que o botão ocupe a sua própria coluna na grelha */
+  grid-column: span 1;
 }
 
 .button:hover {
