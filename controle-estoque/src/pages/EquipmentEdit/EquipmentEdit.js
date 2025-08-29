@@ -16,7 +16,8 @@ const EquipmentEdit = () => {
   const [formData, setFormData] = useState({
     nome: "", marca: "", categoria: "", tombamento: "",
     modelo: "", status: "", serialnumber: "", estoque: "",
-    sem_tombamento: false, // --- CAMPO ADICIONADO ---
+    sem_tombamento: false,
+    ip: "", // --- CAMPO ADICIONADO AO ESTADO ---
   });
   const [fieldErrors, setFieldErrors] = useState({});
 
@@ -55,14 +56,12 @@ const EquipmentEdit = () => {
     fetchInitialData();
   }, [id, location.state, showNotification]);
 
-  // --- HANDLECHANGE ATUALIZADO PARA CHECKBOX ---
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     const val = type === 'checkbox' ? checked : value;
     
     setFormData((prev) => {
       const newData = { ...prev, [name]: val };
-      // Limpa o tombamento se o checkbox for marcado
       if (name === "sem_tombamento" && checked) {
         newData.tombamento = "";
       }
@@ -131,7 +130,6 @@ const EquipmentEdit = () => {
           </div>
         </div>
 
-        {/* --- LINHA DO TOMBAMENTO COM CHECKBOX --- */}
         <div className={styles.formRow}>
           <div className={styles.formGroup}>
             <label className={styles.label}>Tombamento</label>
@@ -143,13 +141,21 @@ const EquipmentEdit = () => {
             <label htmlFor="sem_tombamento_checkbox">Sem tombamento</label>
           </div>
         </div>
-
+         
+        {/* --- CAMPO IP RESTAURADO --- */}
         <div className={styles.formRow}>
           <div className={styles.formGroup}>
             <label className={styles.label}>Serial Number</label>
             <input type="text" name="serialnumber" value={formData.serialnumber} onChange={handleChange} required disabled={!isAdmin} className={`${styles.input} ${fieldErrors.serialnumber ? styles.inputError : ""}`} />
             {fieldErrors.serialnumber && <div className={styles.errorText}>{fieldErrors.serialnumber[0]}</div>}
           </div>
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Endereço IP</label>
+            <input type="text" name="ip" value={formData.ip || ''} onChange={handleChange} className={styles.input} />
+          </div>
+        </div>
+
+        <div className={styles.formRow}>
           <div className={styles.formGroup}>
             <label className={styles.label}>Status</label>
             <select name="status" value={formData.status} onChange={handleChange} required className={styles.input}>
@@ -161,9 +167,7 @@ const EquipmentEdit = () => {
               <option value="Backup">Backup</option>
             </select>
           </div>
-        </div>
-        
-        <div className={styles.formGroup}>
+          <div className={styles.formGroup}>
             <label className={styles.label}>Estoque</label>
             <select name="estoque" value={formData.estoque} onChange={handleChange} required className={styles.input}>
               <option value="">Selecione o Estoque</option>
@@ -173,6 +177,7 @@ const EquipmentEdit = () => {
                 </option>
               ))}
             </select>
+          </div>
         </div>
         
         <div className={styles.buttonContainer}>

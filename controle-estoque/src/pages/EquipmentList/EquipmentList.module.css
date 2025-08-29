@@ -6,7 +6,8 @@
 }
 
 .heading {
-  font-size: 28px;
+  /* Usando clamp() para um tamanho de fonte fluido e responsivo */
+  font-size: clamp(1.5rem, 5vw, 1.75rem); /* Mínimo, Preferido, Máximo */
   margin-bottom: 20px;
   font-weight: 700;
   color: var(--textprimary);
@@ -30,8 +31,6 @@
   transform: translateY(-2px);
 }
 
-/* --- ESTILO DE TABELA COM FOCO EM UX --- */
-
 .tableContainer {
   width: 100%;
   overflow-x: auto;
@@ -52,6 +51,12 @@
   vertical-align: middle;
   text-align: left;
   border-bottom: 1px solid var(--bordercolor);
+  /* border-right: 1px solid var(--bordercolor); */
+}
+
+.th:last-child,
+.td:last-child {
+  border-right: none;
 }
 
 .th {
@@ -86,7 +91,6 @@
   color: var(--textsecondary);
 }
 
-/* --- BADGES DE STATUS --- */
 .statusBadge {
   padding: 4px 12px;
   border-radius: 16px;
@@ -101,7 +105,6 @@
 .statusSubstituida { background-color: #3B82F6; }
 .statusBackup { background-color: #8B5CF6; }
 
-/* --- BOTÕES DE AÇÃO COM ÍCONES --- */
 .actionButton {
   width: 40px;
   height: 40px;
@@ -114,7 +117,6 @@
   align-items: center;
   justify-content: center;
 }
-
 .editButton {
   background-color: var(--btnsecondarybg);
   color: var(--btnprimarybg);
@@ -124,7 +126,6 @@
   background-color: var(--btnsecondaryhover);
   transform: scale(1.1);
 }
-
 .deleteButton {
   background-color: #fee2e2;
   color: #dc2626;
@@ -135,13 +136,15 @@
   transform: scale(1.1);
 }
 
-/* --- PAGINAÇÃO E ITENS --- */
 .itemsPerPage {
   display: flex;
   align-items: center;
   gap: 8px;
   margin: 16px 0;
   font-size: 14px;
+  /* Centraliza o container em telas menores */
+  justify-content: center;
+  flex-wrap: wrap; /* Permite que os itens quebrem a linha em telas muito pequenas */
 }
 .itemsPerPage label { font-weight: 500; color: var(--textsecondary); }
 .itemsPerPage select {
@@ -154,11 +157,110 @@
   cursor: pointer;
 }
 
+/* --- RESPONSIVIDADE "CARD VIEW" PARA TELEMÓVEL --- */
+@media (max-width: 900px) {
+  .tableContainer {
+    border: none;
+    box-shadow: none;
+  }
 
-
-@media (max-width: 768px) {
-  .table {
+  .table, thead, tbody, th, td, tr {
     display: block;
-    overflow-x: auto; /* Permite scroll horizontal na tabela */
+  }
+
+  .th, .td, .th:last-child, .td:last-child {
+      border-right: none;
+  }
+
+  .table thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  .table tr {
+    border: 1px solid var(--bordercolor);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    background-color: var(--bgcard);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+  .table tbody tr:nth-child(even) {
+    background-color: var(--bgcard);
+  }
+
+  .table td {
+    border: none;
+    border-bottom: 1px solid var(--bordercolor);
+    position: relative;
+    /* Alterado padding para ser mais flexível */
+    padding-left: 45%;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: right;
+    /* Garante que o conteúdo não quebre o layout */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .table td:last-child {
+    border-bottom: 0;
+  }
+
+  .table td:before {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 16px;
+    /* Ajustado para não ocupar tanto espaço */
+    width: 40%;
+    padding-right: 10px;
+    white-space: nowrap;
+    text-align: left;
+    font-weight: 600;
+    color: var(--textprimary);
+    /* Adicionado para evitar que o texto do label seja cortado */
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .table td:nth-of-type(1):before { content: "Fornecedor"; }
+  .table td:nth-of-type(2):before { content: "Marca"; }
+  .table td:nth-of-type(3):before { content: "Modelo"; }
+  .table td:nth-of-type(4):before { content: "Tombamento"; }
+  .table td:nth-of-type(5):before { content: "Categoria"; }
+  .table td:nth-of-type(6):before { content: "Serial"; }
+  .table td:nth-of-type(7):before { content: "IP"; }
+  .table td:nth-of-type(8):before { content: "Status"; }
+  .table td:nth-of-type(9):before { content: "Ações"; }
+
+  .centerAlign {
+    text-align: right !important;
+  }
+}
+
+/* Breakpoint adicional para telas muito pequenas (ex: iPhone SE) */
+@media (max-width: 480px) {
+  .container {
+    /* Reduz o padding em telas muito pequenas para dar mais espaço */
+    padding: 10px;
+  }
+
+  .button {
+    /* O botão ocupa a largura total para facilitar o clique */
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  .table td {
+    padding-left: 40%; /* Menos padding para dar mais espaço ao conteúdo */
+    font-size: 13px; /* Reduz um pouco a fonte */
+  }
+
+  .table td:before {
+    width: 35%; /* Reduz a largura do label */
+    font-size: 12px; /* Reduz a fonte do label */
+    left: 10px;
   }
 }
