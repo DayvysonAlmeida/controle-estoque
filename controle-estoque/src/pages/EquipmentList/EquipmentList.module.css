@@ -1,0 +1,209 @@
+.container {
+  padding: 10px;
+  max-width: 1500px;
+  margin: 0 auto;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: var(--background, #f9f9f9);
+}
+
+.heading {
+  font-size: 24px;
+  margin-bottom: 20px;
+  font-weight: bold;
+  color: var(--primary, #58bc82);
+}
+
+.filters {
+  margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.input,
+.select {
+  padding: 10px;
+  border: 1px solid var(--border, #ddd);
+  border-radius: 5px;
+  box-sizing: border-box;
+  height: 40px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.select {
+  min-width: 180px;
+}
+
+.button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  background-color: var(--btnprimarybg, #58bc82);
+  color: var(--buttonText, #fff);
+  transition: background-color 0.2s ease-in-out;
+}
+
+.button:hover {
+  background-color: #45a56b;
+}
+
+.tableContainer {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.08);
+  background: #fff;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.th {
+  padding: 12px;
+  border: 1px solid var(--border, #ddd);
+  text-align: left;
+  background-color: var(--primary, #58bc82);
+  color: #fff;
+  font-weight: bold;
+}
+
+.td {
+  padding: 10px;
+  border: 1px solid var(--border, #ddd);
+  color: var(--text, #333);
+}
+
+.table tr:hover {
+  background-color: #f5f5f5;
+  transition: background-color 0.2s ease;
+}
+
+.actionButton {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-right: 8px;
+  font-size: 13px;
+  background-color: var(--btnprimarybg, #58bc82);
+  color: var(--buttonText, #fff);
+  transition: all 0.2s ease-in-out;
+}
+
+.actionButton:hover {
+  background-color: #45a56b;
+  transform: scale(1.05);
+}
+
+.input:focus,
+.select:focus {
+  outline: none;
+  border-color: var(--primary, #58bc82);
+  transition: border-color 0.2s ease-in-out;
+}
+
+.itemsPerPage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0;
+  font-size: 14px;
+}
+
+.itemsPerPage label {
+  font-weight: 500;
+  color: #444;
+}
+
+.itemsPerPage select {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.itemsPerPage select:focus,
+.itemsPerPage select:hover {
+  border-color: var(--primary, #58bc82);
+  box-shadow: 0 0 4px rgba(88, 188, 130, 0.4);
+}
+
+/* Checkbox alinhado ao centro */
+.table .td input[type="checkbox"] {
+  display: flex;
+  margin: auto;
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+
+/* 🔹 Responsividade para telas menores */
+@media (max-width: 768px) {
+  .container {
+    padding: 5px;
+  }
+
+  .heading {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+
+  .filters {
+    flex-direction: column;
+    margin-bottom: 15px;
+  }
+
+  .input,
+  .select {
+    min-width: 100%;
+    padding: 8px;
+    height: auto;
+  }
+
+  .button {
+    padding: 8px 12px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease-in-out;
+  }
+
+  .table {
+    font-size: 12px;
+  }
+
+  .th,
+  .td {
+    padding: 8px;
+    font-size: 0.9rem;
+  }
+
+  .actionButton {
+    padding: 5px 8px;
+    font-size: 12px;
+    margin-right: 4px;
+  }
+
+  .itemsPerPage {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .itemsPerPage select {
+    width: 100%;
+  }
+}
