@@ -80,13 +80,18 @@ api.interceptors.response.use(
       } catch (err) {
         // Se o refresh falhar, desloga o utilizador
         processQueue(err, null);
+        
+        // --- MELHORIA AQUI ---
+        // Guarda uma mensagem para a página de login mostrar
+        localStorage.setItem('sessionExpiredMessage', 'A sua sessão expirou. Por favor, faça login novamente.');
+        
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
+        
+        // Redireciona para a página de login (ou a raiz, como está)
         window.location.href = "/";
         return Promise.reject(err);
-      } finally {
-        isRefreshing = false;
-      }
+      } 
     }
 
     return Promise.reject(error);

@@ -1,5 +1,5 @@
 // src/pages/Login/Login.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import styles from "./Login.module.css";
@@ -17,6 +17,14 @@ const Login = () => {
   
   const navigate = useNavigate();
   const { showNotification } = useNotification();
+
+  useEffect(() => {
+    const message = localStorage.getItem('sessionExpiredMessage');
+    if (message) {
+      showNotification(message, "info"); // Mostra a notificação
+      localStorage.removeItem('sessionExpiredMessage'); // Limpa a mensagem para não mostrar de novo
+    }
+  }, [showNotification]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
