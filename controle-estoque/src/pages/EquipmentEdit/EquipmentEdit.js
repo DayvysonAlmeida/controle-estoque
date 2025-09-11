@@ -17,7 +17,8 @@ const EquipmentEdit = () => {
     nome: "", marca: "", categoria: "", tombamento: "",
     modelo: "", status: "", serialnumber: "", estoque: "",
     sem_tombamento: false,
-    ip: "", // --- CAMPO ADICIONADO AO ESTADO ---
+    ip: "",
+    descricao: "", // Garante que o campo esteja no estado inicial
   });
   const [fieldErrors, setFieldErrors] = useState({});
 
@@ -142,7 +143,6 @@ const EquipmentEdit = () => {
           </div>
         </div>
          
-        {/* --- CAMPO IP RESTAURADO --- */}
         <div className={styles.formRow}>
           <div className={styles.formGroup}>
             <label className={styles.label}>Serial Number</label>
@@ -178,6 +178,18 @@ const EquipmentEdit = () => {
               ))}
             </select>
           </div>
+        </div>
+        
+        
+        {/* O formGroup da Descrição agora fica fora de qualquer formRow para ocupar 100% da largura */}
+        <div className={styles.formGroup}>
+          <label className={styles.label}>Descrição</label>
+          <textarea 
+            name="descricao" 
+            value={formData.descricao || ''} 
+            onChange={handleChange} 
+            className={styles.textarea}
+          ></textarea>
         </div>
         
         <div className={styles.buttonContainer}>
