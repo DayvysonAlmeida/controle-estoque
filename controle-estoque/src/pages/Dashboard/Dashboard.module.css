@@ -158,3 +158,8 @@
     padding: 16px;
   }
 }
+
+
+.clickableCard {
+  cursor: pointer;
+}

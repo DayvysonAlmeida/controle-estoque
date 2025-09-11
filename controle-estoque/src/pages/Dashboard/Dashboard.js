@@ -1,5 +1,6 @@
 // src/pages/Dashboard/Dashboard.js
 import React, { useEffect, useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom"; // --- 1. IMPORTAR O useNavigate ---
 import { useTheme } from "../../theme/theme";
 import { Bar, Pie } from "react-chartjs-2";
 import {
@@ -19,12 +20,22 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 
 const Dashboard = () => {
   const { colors } = useTheme();
+  const navigate = useNavigate(); // --- 2. INICIAR O useNavigate ---
 
   const [profile, setProfile] = useState(null);
   const [estoques, setEstoques] = useState([]);
   const [selectedStock, setSelectedStock] = useState(null);
   const [allEquipmentsByStock, setAllEquipmentsByStock] = useState({});
   const [loading, setLoading] = useState(true);
+
+  // --- 3. CRIAR A FUNÇÃO DE NAVEGAÇÃO ---
+  const handleCardClick = (status) => {
+    if (!selectedStock) return; // Não faz nada se nenhum estoque estiver selecionado
+    // Navega para a lista de equipamentos, passando o filtro de status no 'state'
+    navigate(`/estoque/${selectedStock.id}`, {
+      state: { status: status },
+    });
+  };
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -79,7 +90,6 @@ const Dashboard = () => {
     };
   }, [selectedStock, allEquipmentsByStock]);
 
-  // --- O QUE MUDOU: DADOS DOS GRÁFICOS RESTAURADOS ---
   const barChartData = {
     labels: ["Ativo", "Manutenção", "Inativo", "Substituído", "Backup"],
     datasets: [
@@ -146,28 +156,29 @@ const Dashboard = () => {
         )}
       </header>
 
+      {/* --- 4. ADICIONAR O onClick AOS CARTÕES --- */}
       <section className={styles.metricsGrid}>
-        <div className={styles.card}>
+        <div className={`${styles.card} ${styles.clickableCard}`} onClick={() => handleCardClick("")}>
           <h3 className={styles.cardTitle}>Total</h3>
           <p className={styles.cardValue}>{metrics.total}</p>
         </div>
-        <div className={styles.card}>
+        <div className={`${styles.card} ${styles.clickableCard}`} onClick={() => handleCardClick("Ativo")}>
           <h3 className={styles.cardTitle}>Ativos</h3>
           <p className={styles.cardValue} style={{ color: colors.chartcolor2 }}>{metrics.ativo}</p>
         </div>
-        <div className={styles.card}>
+        <div className={`${styles.card} ${styles.clickableCard}`} onClick={() => handleCardClick("Manutenção")}>
           <h3 className={styles.cardTitle}>Manutenção</h3>
           <p className={styles.cardValue} style={{ color: colors.chartcolor3 }}>{metrics.manutencao}</p>
         </div>
-        <div className={styles.card}>
+        <div className={`${styles.card} ${styles.clickableCard}`} onClick={() => handleCardClick("Inativo")}>
           <h3 className={styles.cardTitle}>Inativos</h3>
           <p className={styles.cardValue} style={{ color: colors.textsecondary }}>{metrics.inativo}</p>
         </div>
-        <div className={styles.card}>
+        <div className={`${styles.card} ${styles.clickableCard}`} onClick={() => handleCardClick("Substituída")}>
           <h3 className={styles.cardTitle}>Substituídos</h3>
           <p className={styles.cardValue} style={{ color: colors.chartcolor1 }}>{metrics.substituida}</p>
         </div>
-        <div className={styles.card}>
+        <div className={`${styles.card} ${styles.clickableCard}`} onClick={() => handleCardClick("Backup")}>
           <h3 className={styles.cardTitle}>Backup</h3>
           <p className={styles.cardValue} style={{ color: colors.chartcolor5 }}>{metrics.backup}</p>
         </div>
