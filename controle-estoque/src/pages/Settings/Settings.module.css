@@ -1,50 +1,51 @@
+/* src/pages/Settings/Settings.module.css */
 .container {
-    padding: 20px;
-    max-width: 600px;
-    margin: 0 auto;
-    text-align: center;
-    border-radius: 8px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
-  
-  .heading {
-    font-size: 24px;
-    margin-bottom: 10px;
-    font-weight: bold;
-    color: var(--primary, #007BFF);
-  }
-  
-  .subText {
-    margin-bottom: 20px;
-    font-size: 16px;
-    color: var(--text, #333);
-  }
-  
-  .content {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .item {
-    margin-bottom: 10px;
-  }
-  
-  .label {
-    font-size: 16px;
-    font-weight: bold;
-    text-align: center;
-    color: var(--text, #333);
-  }
-  
-  .button {
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s ease, transform 0.2s ease;
-  }
-  
+  max-width: 700px;
+  margin: 20px auto;
+  padding: 0;
+  background-color: var(--bgcard);
+  border: 1px solid var(--bordercolor);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+.header {
+  padding: 32px;
+}
+.heading {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--textprimary);
+}
+.subheading {
+  margin-top: 8px;
+  font-size: 16px;
+  color: var(--textsecondary);
+}
+.content {
+  display: flex;
+  flex-direction: column;
+}
+.settingItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 24px 32px;
+  border-top: 1px solid var(--bordercolor);
+}
+.settingLabel {
+  display: flex;
+  flex-direction: column;
+}
+.labelText {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--textprimary);
+}
+.labelValue {
+  font-size: 14px;
+  color: var(--textsecondary);
+  margin-top: 4px;
+}

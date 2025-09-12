@@ -1,236 +1,140 @@
+// src/pages/UserForm/UserForm.js
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useTheme } from "../../theme/theme";
 import api from "../../services/api";
 import styles from "./UserForm.module.css";
 import { useNotification } from "../../contexts/NotificationProvider";
 
 const UserForm = () => {
   const navigate = useNavigate();
-  const { colors } = useTheme();
   const { showNotification } = useNotification();
-
-  // Estado para armazenar os estoques disponíveis para seleção
   const [availableStocks, setAvailableStocks] = useState([]);
-  
-  // Estado para os grupos (funções/permissions) vindos do endpoint
   const [groups, setGroups] = useState([]);
 
-  // Busca os estoques disponíveis do backend (executa apenas uma vez)
   useEffect(() => {
-    async function fetchStocks() {
+    async function fetchInitialData() {
       try {
-        const response = await api.get("estoques/");
-        // Se o backend usar paginação, usa response.data.results; caso contrário response.data
-        const stocks = response.data.results || response.data;
-        const mappedStocks = Array.isArray(stocks)
-          ? stocks.map((stock) => ({
-              id: stock.id,
-              nome: stock.nome,
-            }))
-          : [];
-        setAvailableStocks(mappedStocks);
+        const stocksRes = await api.get("estoques/");
+        const stocksData = stocksRes.data.results || stocksRes.data;
+        setAvailableStocks(Array.isArray(stocksData) ? stocksData : []);
+
+        const groupsRes = await api.get("groups/");
+        const groupsData = groupsRes.data.results || groupsRes.data;
+        setGroups(Array.isArray(groupsData) ? groupsData : []);
       } catch (error) {
-        console.error("Erro ao buscar estoques:", error);
-        showNotification("Erro ao buscar estoques.", "error");
+        console.error("Erro ao buscar dados iniciais:", error);
+        showNotification("Falha ao carregar dados para o formulário.", "error");
       }
     }
-    fetchStocks();
-  }, []); // Array de dependências vazio para executar apenas uma vez
+    fetchInitialData();
+  }, [showNotification]);
 
-  // Busca os grupos disponíveis do endpoint (executa apenas uma vez)
-  useEffect(() => {
-    async function fetchGroups() {
-      try {
-        const response = await api.get("groups/");
-        console.log("Resposta dos grupos:", response.data);
-        // Utiliza response.data.results se existir, caso contrário response.data
-        let data = response.data.results || response.data;
-        // Se não for um array, força a conversão para array vazio
-        if (!Array.isArray(data)) {
-          data = [];
-        }
-        setGroups(data);
-      } catch (error) {
-        console.error("Erro ao buscar grupos:", error);
-        showNotification("Erro ao buscar grupos.", "error");
-      }
-    }
-    fetchGroups();
-  }, []); // Executa uma única vez
-
-  // Estado do formulário
   const [formData, setFormData] = useState({
-    nome: "",
-    email: "",
-    username: "",
-    senha: "",
-    funcao: "",
-    estoques: [],
+    nome: "", email: "", username: "", password: "", funcao: "", estoques: [],
   });
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
+  };
+  
+  const handleCheckboxChange = (e) => {
+    const value = Number(e.target.value);
+    const checked = e.target.checked;
+    setFormData((prev) => {
+      const { estoques } = prev;
+      if (checked && !estoques.includes(value)) {
+        return { ...prev, estoques: [...estoques, value] };
+      }
+      if (!checked) {
+        return { ...prev, estoques: estoques.filter((id) => id !== value) };
+      }
+      return prev;
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setFieldErrors({});
     try {
-      // Recupera o token e cria a payload ajustando "senha" para "password"
-      const token = localStorage.getItem("accessToken");
+      // Renomeia 'senha' para 'password' para corresponder à API
       const payload = { ...formData, password: formData.senha };
       delete payload.senha;
 
-      const response = await api.post("users/", payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.status === 201) {
-        showNotification("Usuário cadastrado com sucesso!", "success");
-        setTimeout(() => {
-          navigate("/usuarios");
-        }, 2000);
-      } else {
-        showNotification("Falha ao cadastrar usuário.", "error");
-      }
+      await api.post("users/", payload);
+      showNotification("Utilizador criado com sucesso!", "success");
+      navigate("/usuarios");
     } catch (error) {
-      console.error("Erro ao cadastrar usuário:", error.response?.data || error);
-      showNotification("Erro ao conectar-se ao servidor.", "error");
+      console.error("Erro ao criar utilizador:", error.response?.data || error);
+      if (error.response?.data) {
+        setFieldErrors(error.response.data);
+        showNotification("Por favor, corrija os erros no formulário.", "error");
+      } else {
+        showNotification("Ocorreu um erro de rede. Tente novamente.", "error");
+      }
     }
   };
 
   return (
-    <div
-      className={styles.container}
-      style={{ backgroundColor: colors.background, color: colors.text }}
-    >
-      <h2 className={styles.heading} style={{ color: colors.primary }}>
-        Cadastro de Usuário
-      </h2>
-
+    <div className={styles.container}>
+      <h2 className={styles.heading}>Criar Novo Utilizador</h2>
       <form onSubmit={handleSubmit} className={styles.form}>
-        {/* Campo Nome */}
-        <div className={styles.formGroup}>
-          <label className={styles.label}>Nome:</label>
-          <input
-            type="text"
-            name="nome"
-            value={formData.nome}
-            onChange={handleChange}
-            required
-            className={styles.input}
-            style={{ borderColor: colors.border }}
-          />
-        </div>
-
-        {/* Campo Email */}
-        <div className={styles.formGroup}>
-          <label className={styles.label}>Email:</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className={styles.input}
-            style={{ borderColor: colors.border }}
-          />
-        </div>
-
-        {/* Campo Usuário */}
-        <div className={styles.formGroup}>
-          <label className={styles.label}>Usuário:</label>
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            required
-            className={styles.input}
-            style={{ borderColor: colors.border }}
-          />
-        </div>
-
-        {/* Campo Senha */}
-        <div className={styles.formGroup}>
-          <label className={styles.label}>Senha:</label>
-          <input
-            type="password"
-            name="senha"
-            value={formData.senha}
-            onChange={handleChange}
-            required
-            className={styles.input}
-            style={{ borderColor: colors.border }}
-          />
-        </div>
-
-        {/* Campo Função */}
-        <div className={styles.formGroup}>
-          <label className={styles.label}>Função:</label>
-          <select
-            name="funcao"
-            value={formData.funcao}
-            onChange={handleChange}
-            required
-            className={styles.input}
-            style={{ borderColor: colors.border }}
-          >
-            <option value="">Selecione...</option>
-            {groups.map((group) => (
-              <option key={group.id} value={group.name}>
-                {group.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Seção de Estoques via Checkboxes */}
-        <div className={styles.formGroup}>
-          <label className={styles.label}>Estoques:</label>
-          <div className={styles.checkboxContainer}>
-            {availableStocks.length === 0 ? (
-              <p>Nenhum estoque disponível</p>
-            ) : (
-              availableStocks.map((stock) => (
-                <div key={stock.id} className={styles.checkboxItem}>
-                  <input
-                    type="checkbox"
-                    name="estoques"
-                    value={stock.id}
-                    checked={formData.estoques.includes(stock.id)}
-                    onChange={(e) => {
-                      const value = Number(e.target.value);
-                      const checked = e.target.checked;
-                      setFormData((prev) => {
-                        if (checked && !prev.estoques.includes(value)) {
-                          return { ...prev, estoques: [...prev.estoques, value] };
-                        }
-                        if (!checked) {
-                          return { ...prev, estoques: prev.estoques.filter((id) => id !== value) };
-                        }
-                        return prev;
-                      });
-                    }}
-                  />
-                  <span>{stock.nome}</span>
-                </div>
-              ))
-            )}
+        <div className={styles.formRow}>
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Nome Completo</label>
+            <input type="text" name="nome" value={formData.nome} onChange={handleChange} required className={`${styles.input} ${fieldErrors.nome ? styles.inputError : ""}`} />
+            {fieldErrors.nome && <div className={styles.errorText}>{fieldErrors.nome[0]}</div>}
+          </div>
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Nome de Utilizador</label>
+            <input type="text" name="username" value={formData.username} onChange={handleChange} required className={`${styles.input} ${fieldErrors.username ? styles.inputError : ""}`} />
+            {fieldErrors.username && <div className={styles.errorText}>{fieldErrors.username[0]}</div>}
           </div>
         </div>
-
-        <button
-          type="submit"
-          className={styles.button}
-          style={{ backgroundColor: colors.primary, color: colors.buttonText }}
-        >
-          Cadastrar Usuário
-        </button>
+        <div className={styles.formRow}>
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Email</label>
+            <input type="email" name="email" value={formData.email} onChange={handleChange} required className={`${styles.input} ${fieldErrors.email ? styles.inputError : ""}`} />
+            {fieldErrors.email && <div className={styles.errorText}>{fieldErrors.email[0]}</div>}
+          </div>
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Senha</label>
+            <input type="password" name="senha" value={formData.senha} onChange={handleChange} required className={`${styles.input} ${fieldErrors.password ? styles.inputError : ""}`} />
+            {fieldErrors.password && <div className={styles.errorText}>{fieldErrors.password[0]}</div>}
+          </div>
+        </div>
+        <div className={styles.formGroup}>
+          <label className={styles.label}>Função / Grupo</label>
+          <select name="funcao" value={formData.funcao} onChange={handleChange} required className={`${styles.input} ${fieldErrors.funcao ? styles.inputError : ""}`}>
+            <option value="">Selecione...</option>
+            {groups.map((group) => (
+              <option key={group.id} value={group.name}>{group.name}</option>
+            ))}
+          </select>
+          {fieldErrors.funcao && <div className={styles.errorText}>{fieldErrors.funcao[0]}</div>}
+        </div>
+        <div className={styles.formGroup}>
+          <label className={styles.label}>Acesso aos Estoques</label>
+          <div className={styles.checkboxContainer}>
+            {availableStocks.map((stock) => (
+              <div key={stock.id} className={styles.checkboxItem}>
+                <input type="checkbox" id={`stock-${stock.id}`} name="estoques" value={stock.id} checked={formData.estoques.includes(stock.id)} onChange={handleCheckboxChange} />
+                <label htmlFor={`stock-${stock.id}`}>{stock.nome}</label>
+              </div>
+            ))}
+          </div>
+          {fieldErrors.estoques && <div className={styles.errorText}>{fieldErrors.estoques[0]}</div>}
+        </div>
+        <div className={styles.buttonContainer}>
+          <button type="button" className={`${styles.button} ${styles.secondaryButton}`} onClick={() => navigate(-1)}>
+            Cancelar
+          </button>
+          <button type="submit" className={styles.button}>
+            Criar Utilizador
+          </button>
+        </div>
       </form>
     </div>
   );

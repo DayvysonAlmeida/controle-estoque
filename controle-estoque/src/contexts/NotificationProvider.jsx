@@ -1,40 +1,35 @@
 // src/contexts/NotificationProvider.jsx
-import React, { createContext, useState, useContext } from 'react';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
+import React, { createContext, useState, useContext, useCallback } from 'react';
+import Notification from '../components/Notification/Notification';
 
 const NotificationContext = createContext();
 
 export const NotificationProvider = ({ children }) => {
-  const [notification, setNotification] = useState({
-    open: false,
-    message: '',
-    severity: 'info', // 'error', 'warning', 'info', 'success'
-  });
+  const [notification, setNotification] = useState(null);
 
-  const showNotification = (message, severity = 'info') => {
-    setNotification({ open: true, message, severity });
-  };
+  const showNotification = useCallback((message, severity = 'info') => {
+    setNotification({ message, severity });
 
-  const handleClose = (event, reason) => {
-    if (reason === 'clickaway') return;
-    setNotification({ open: false, message: '', severity: 'info' });
-  };
+    // A notificação desaparece automaticamente após 6 segundos
+    setTimeout(() => {
+      setNotification(null);
+    }, 6000);
+  }, []);
   
+  const handleClose = useCallback(() => {
+    setNotification(null);
+  }, []);
 
   return (
     <NotificationContext.Provider value={{ showNotification }}>
       {children}
-      <Snackbar
-        open={notification.open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert onClose={handleClose} severity={notification.severity} variant="filled" sx={{ width: '100%' }}>
-          {notification.message}
-        </Alert>
-      </Snackbar>
+      {notification && (
+        <Notification 
+          message={notification.message}
+          severity={notification.severity}
+          onClose={handleClose}
+        />
+      )}
     </NotificationContext.Provider>
   );
 };

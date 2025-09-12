@@ -1,57 +1,35 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useTheme } from "../../theme/theme";
+// src/pages/Settings/Settings.js
+import React from "react";
 import styles from "./Settings.module.css";
+import { useTheme } from "../../theme/theme";
 
 function Settings() {
-  const navigate = useNavigate();
-  const { theme, toggleTheme, colors } = useTheme();
-  const [loading, setLoading] = useState(false);
-
-  const handleSave = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      navigate("/dashboard");
-    }, 1000);
-  };
+  const { theme } = useTheme();
 
   return (
-    <div
-      className={styles.container}
-      style={{ backgroundColor: colors.background, color: colors.text }}
-    >
-      <h1 className={styles.heading}>Configurações</h1>
-      <p className={styles.subText}>Gerencie suas preferências.</p>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h2 className={styles.heading}>Configurações</h2>
+        <p className={styles.subheading}>Ajuste as suas preferências da aplicação.</p>
+      </div>
+      
       <div className={styles.content}>
-        <div className={styles.item}>
-          <label className={styles.label}>
-            Tema Atual: {theme === "light" ? "Claro" : "Escuro"}
-          </label>
+        <div className={styles.settingItem}>
+          <div className={styles.settingLabel}>
+            <span className={styles.labelText}>Perfil</span>
+            <span className={styles.labelValue}>Edite as suas informações pessoais.</span>
+          </div>
+          {/* Pode adicionar um botão aqui no futuro para ir para a página de perfil */}
         </div>
-        <button
-          className={styles.button}
-          style={{
-            backgroundColor: colors.buttonBackground,
-            color: colors.buttonText,
-          }}
-          onClick={toggleTheme}
-        >
-          Alternar para {theme === "light" ? "Escuro" : "Claro"}
-        </button>
-        <button
-          className={styles.button}
-          style={{
-            backgroundColor: colors.primary,
-            color: colors.buttonText,
-            opacity: loading ? 0.7 : 1,
-            cursor: loading ? "not-allowed" : "pointer",
-          }}
-          onClick={handleSave}
-          disabled={loading}
-        >
-          {loading ? "Salvando..." : "Salvar Configurações"}
-        </button>
+        
+        <div className={styles.settingItem}>
+          <div className={styles.settingLabel}>
+            <span className={styles.labelText}>Tema Visual</span>
+            <span className={styles.labelValue}>
+              O controlo do tema está agora na barra lateral. O tema atual é: <strong>{theme === "light" ? "Claro" : "Escuro"}</strong>.
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );

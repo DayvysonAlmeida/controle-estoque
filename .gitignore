@@ -1,0 +1,54 @@
+# Arquivos tempor�rios e compilados do Python (Django)
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Bancos de dados, arquivos de log e caches
+db.sqlite3
+mysql_data/
+*.log
+*.pot
+*.mo
+
+# Ambiente virtual (se estiver na pasta do projeto)
+env/
+venv/
+ENV/
+.Python
+
+# Arquivos de configura��o local do Django (se houver)
+local_settings.py
+
+# Diret�rios gerados automaticamente pelo Django
+staticfiles/
+
+# Arquivos ou configura��es sens�veis do Docker
+docker-compose.override.yml
+*.env
+
+# Diret�rio Node do React: depend�ncias externas n�o devem ser versionadas
+controle-estoque/node_modules/
+
+# Builds ou diret�rios gerados do React
+controle-estoque/build/
+controle-estoque/dist/
+
+# Arquivos de ambiente (React)
+controle-estoque/.env
+
+# Configura��es do editor e do sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+# Configura��es do docker
+*.zip
+
+*Dockerfile
+
+
+dayfer
+dayfer.pub

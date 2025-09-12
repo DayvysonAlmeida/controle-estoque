@@ -1,0 +1,216 @@
+.
+├── backend
+│   ├── api
+│   │   ├── admin.py
+│   │   ├── apps.py
+│   │   ├── __init__.py
+│   │   ├── migrations
+│   │   │   ├── 0001_initial.py
+│   │   │   ├── 0002_alter_equipment_tombamento.py
+│   │   │   ├── 0003_logequipamento.py
+│   │   │   ├── 0004_alter_logequipamento_equipamento.py
+│   │   │   ├── 0005_alter_equipment_serialnumber_and_more.py
+│   │   │   └── __init__.py
+│   │   ├── models.py
+│   │   ├── permissions.py
+│   │   ├── serializers.py
+│   │   ├── signals.py
+│   │   ├── tests.py
+│   │   └── views.py
+│   ├── db.sqlite3
+│   ├── Dockerfile
+│   ├── manage.py
+│   ├── mybackend
+│   │   ├── asgi.py
+│   │   ├── __init__.py
+│   │   ├── settings.py
+│   │   ├── urls.py
+│   │   └── wsgi.py
+│   ├── requirements.txt
+│   └── staticfiles
+│       ├── admin
+│       │   ├── css
+│       │   │   ├── autocomplete.css
+│       │   │   ├── base.css
+│       │   │   ├── changelists.css
+│       │   │   ├── dark_mode.css
+│       │   │   ├── dashboard.css
+│       │   │   ├── forms.css
+│       │   │   ├── login.css
+│       │   │   ├── nav_sidebar.css
+│       │   │   ├── responsive.css
+│       │   │   ├── responsive_rtl.css
+│       │   │   ├── rtl.css
+│       │   │   ├── unusable_password_field.css
+│       │   │   ├── vendor
+│       │   │   └── widgets.css
+│       │   ├── img
+│       │   │   ├── calendar-icons.svg
+│       │   │   ├── gis
+│       │   │   ├── icon-addlink.svg
+│       │   │   ├── icon-alert.svg
+│       │   │   ├── icon-calendar.svg
+│       │   │   ├── icon-changelink.svg
+│       │   │   ├── icon-clock.svg
+│       │   │   ├── icon-deletelink.svg
+│       │   │   ├── icon-hidelink.svg
+│       │   │   ├── icon-no.svg
+│       │   │   ├── icon-unknown-alt.svg
+│       │   │   ├── icon-unknown.svg
+│       │   │   ├── icon-viewlink.svg
+│       │   │   ├── icon-yes.svg
+│       │   │   ├── inline-delete.svg
+│       │   │   ├── LICENSE
+│       │   │   ├── README.txt
+│       │   │   ├── search.svg
+│       │   │   ├── selector-icons.svg
+│       │   │   ├── sorting-icons.svg
+│       │   │   ├── tooltag-add.svg
+│       │   │   └── tooltag-arrowright.svg
+│       │   └── js
+│       │       ├── actions.js
+│       │       ├── admin
+│       │       ├── autocomplete.js
+│       │       ├── calendar.js
+│       │       ├── cancel.js
+│       │       ├── change_form.js
+│       │       ├── core.js
+│       │       ├── filters.js
+│       │       ├── inlines.js
+│       │       ├── jquery.init.js
+│       │       ├── nav_sidebar.js
+│       │       ├── popup_response.js
+│       │       ├── prepopulate_init.js
+│       │       ├── prepopulate.js
+│       │       ├── SelectBox.js
+│       │       ├── SelectFilter2.js
+│       │       ├── theme.js
+│       │       ├── unusable_password_field.js
+│       │       ├── urlify.js
+│       │       └── vendor
+│       └── rest_framework
+│           ├── css
+│           │   ├── bootstrap.min.css
+│           │   ├── bootstrap.min.css.map
+│           │   ├── bootstrap-theme.min.css
+│           │   ├── bootstrap-theme.min.css.map
+│           │   ├── bootstrap-tweaks.css
+│           │   ├── default.css
+│           │   ├── font-awesome-4.0.3.css
+│           │   └── prettify.css
+│           ├── docs
+│           │   ├── css
+│           │   ├── img
+│           │   └── js
+│           ├── fonts
+│           │   ├── fontawesome-webfont.eot
+│           │   ├── fontawesome-webfont.svg
+│           │   ├── fontawesome-webfont.ttf
+│           │   ├── fontawesome-webfont.woff
+│           │   ├── glyphicons-halflings-regular.eot
+│           │   ├── glyphicons-halflings-regular.svg
+│           │   ├── glyphicons-halflings-regular.ttf
+│           │   ├── glyphicons-halflings-regular.woff
+│           │   └── glyphicons-halflings-regular.woff2
+│           ├── img
+│           │   ├── glyphicons-halflings.png
+│           │   ├── glyphicons-halflings-white.png
+│           │   └── grid.png
+│           └── js
+│               ├── ajax-form.js
+│               ├── bootstrap.min.js
+│               ├── coreapi-0.1.1.js
+│               ├── csrf.js
+│               ├── default.js
+│               ├── jquery-3.7.1.min.js
+│               ├── load-ajax-form.js
+│               └── prettify-min.js
+├── controle-estoque
+│   ├── Dockerfile
+│   ├── nginx.conf
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── public
+│   │   ├── apple-touch-icon.png
+│   │   ├── favicon.ico
+│   │   ├── index.html
+│   │   ├── logo192.png
+│   │   ├── logo512.png
+│   │   ├── manifest.json
+│   │   └── robots.txt
+│   ├── README.md
+│   └── src
+│       ├── App.css
+│       ├── App.js
+│       ├── App.test.js
+│       ├── assets
+│       │   ├── logo-login.png
+│       │   └── logo.png
+│       ├── components
+│       │   ├── AccountMenu
+│       │   │   ├── AccountMenu.js
+│       │   │   └── AccountMenu.module.css
+│       │   ├── EquipmentFilters
+│       │   │   ├── EquipmentFilters.js
+│       │   │   └── EquipmentFilters.module.css
+│       │   ├── LeftSidebar
+│       │   │   ├── LeftSidebar.js
+│       │   │   ├── LeftSidebar.module.css
+│       │   │   └── logo.png
+│       │   ├── SessionExpiryModal.js
+│       │   └── SessionManager.js
+│       ├── contexts
+│       │   └── NotificationProvider.jsx
+│       ├── GlobalStyles.js
+│       ├── index.css
+│       ├── index.js
+│       ├── pages
+│       │   ├── Dashboard
+│       │   │   ├── Dashboard.js
+│       │   │   └── Dashboard.module.css
+│       │   ├── EquipmentEdit
+│       │   │   ├── EquipmentEdit.js
+│       │   │   └── EquipmentEdit.module.css
+│       │   ├── EquipmentForm
+│       │   │   ├── EquipmentForm.js
+│       │   │   └── EquipmentForm.module.css
+│       │   ├── EquipmentHistory
+│       │   │   ├── EquipmentHistory.js
+│       │   │   └── EquipmentHistory.module.css
+│       │   ├── EquipmentList
+│       │   │   ├── EquipmentList.js
+│       │   │   └── EquipmentList.module.css
+│       │   ├── LogHistory
+│       │   │   ├── LogHistory.js
+│       │   │   └── LogHistory.module.css
+│       │   ├── Login
+│       │   │   ├── Login.js
+│       │   │   └── Login.module.css
+│       │   ├── Profile
+│       │   │   ├── Profile.js
+│       │   │   └── Profile.module.css
+│       │   ├── Settings
+│       │   │   ├── Settings.js
+│       │   │   └── Settings.module.css
+│       │   ├── UserEdit
+│       │   │   ├── UserEdit.js
+│       │   │   └── UserEdit.module.css
+│       │   ├── UserForm
+│       │   │   ├── UserForm.js
+│       │   │   └── UserForm.module.css
+│       │   └── UserManagement
+│       │       ├── UserManagement.js
+│       │       └── UserManagement.module.css
+│       ├── reportWebVitals.js
+│       ├── services
+│       │   └── api.js
+│       ├── setupTests.js
+│       ├── theme
+│       │   ├── theme.js
+│       │   └── ThemeProvider.js
+│       └── utils
+│           └── stockUtils.js
+├── docker-compose.yml
+└── estrutura.txt
+
+48 directories, 166 files

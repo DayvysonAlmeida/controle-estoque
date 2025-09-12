@@ -1,101 +1,87 @@
+// src/pages/Profile/Profile.js
 import React, { useState, useEffect } from "react";
-import { useTheme } from "../../theme/theme";
 import styles from "./Profile.module.css";
 import api from "../../services/api";
 import { useNotification } from "../../contexts/NotificationProvider";
 
 function Profile() {
-  const { colors } = useTheme();
   const { showNotification } = useNotification();
-
-  // Estados para os dados do perfil
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // Busca os dados do perfil assim que o componente é montado
   useEffect(() => {
     async function fetchProfile() {
       try {
         const response = await api.get("profile/");
-        // Supondo que o objeto retornado contenha as propriedades "nome" e "email"
         setNome(response.data.nome);
         setEmail(response.data.email);
-        setLoading(false);
       } catch (error) {
         console.error("Erro ao buscar perfil:", error);
-        showNotification("Erro ao buscar perfil.", "error");
+        showNotification("Erro ao buscar dados do perfil.", "error");
+      } finally {
         setLoading(false);
       }
     }
     fetchProfile();
   }, [showNotification]);
 
-  // Função para tratar o envio do formulário e atualizar os dados do perfil
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Envia a atualização para o endpoint utilizando o método PUT.
       await api.put("profile/", { nome, email });
       showNotification("Perfil atualizado com sucesso!", "success");
     } catch (error) {
       console.error("Erro ao atualizar perfil:", error);
-      showNotification("Erro ao atualizar perfil.", "error");
+      showNotification("Erro ao atualizar o perfil.", "error");
     }
   };
 
-  // Enquanto os dados estão sendo carregados, mostra uma mensagem ou loader
   if (loading) {
     return (
-      <div
-        className={styles.container}
-        style={{ backgroundColor: colors.background, color: colors.text }}
-      >
-        Carregando...
+      <div className={styles.container}>
+        <p>A carregar...</p>
       </div>
     );
   }
 
   return (
-    <div
-      className={styles.container}
-      style={{ backgroundColor: colors.background, color: colors.text }}
-    >
-      <h1 className={styles.heading} style={{ color: colors.primary }}>
-        Perfil do Usuário
-      </h1>
-      <p className={styles.text}>
-        Aqui você pode visualizar e editar suas informações pessoais.
-      </p>
-      <form className={styles.content} onSubmit={handleSubmit}>
-        <label className={styles.label}>Nome:</label>
-        <input
-          type="text"
-          placeholder="Seu nome"
-          className={styles.input}
-          style={{ borderColor: colors.border }}
-          value={nome}
-          onChange={(e) => setNome(e.target.value)}
-        />
-        <label className={styles.label}>E-mail:</label>
-        <input
-          type="email"
-          placeholder="Seu e-mail"
-          className={styles.input}
-          style={{ borderColor: colors.border }}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <button
-          type="submit"
-          className={styles.button}
-          style={{
-            backgroundColor: colors.primary,
-            color: colors.buttonText,
-          }}
-        >
-          Salvar Alterações
-        </button>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h2 className={styles.heading}>O Meu Perfil</h2>
+        <p className={styles.subheading}>Veja e edite as suas informações pessoais.</p>
+      </div>
+      
+      <form onSubmit={handleSubmit} className={styles.form}>
+        <div className={styles.formGroup}>
+          <label className={styles.label} htmlFor="nome">Nome Completo</label>
+          <input
+            id="nome"
+            type="text"
+            placeholder="O seu nome"
+            className={styles.input}
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+          />
+        </div>
+
+        <div className={styles.formGroup}>
+          <label className={styles.label} htmlFor="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="O seu e-mail"
+            className={styles.input}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+
+        <div className={styles.buttonContainer}>
+          <button type="submit" className={styles.button}>
+            Salvar Alterações
+          </button>
+        </div>
       </form>
     </div>
   );
