@@ -1,14 +1,9 @@
 // src/theme/theme.js
-import { createContext, useState, useContext, useEffect } from "react";
-import { ThemeProvider as SCThemeProvider } from "styled-components"; // Importa o ThemeProvider do styled-components
+import { createContext, useState, useContext, useEffect, useMemo } from "react";
+import { ThemeProvider as SCThemeProvider } from "styled-components";
 
 const ThemeContext = createContext();
 
-/*
-  Este ThemeProvider controla o tema (light ou dark) e fornece um objeto "colors"
-  com os tokens de cor para cada modo, além de encapsular os filhos com o SCThemeProvider,
-  permitindo que o createGlobalStyle (e styled-components em geral) acessem o objeto de tema.
-*/
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState("light");
 
@@ -16,11 +11,14 @@ export const ThemeProvider = ({ children }) => {
     setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
   };
 
-  const colors =
+  const colors = useMemo(() => (
     theme === "light"
       ? {
-          // Light Theme
-          background: "#f9f9f9",
+          // --- O QUE MUDOU: Cores de fundo unificadas ---
+          background: "#FFFFFF",      // Fundo principal agora é branco puro
+          bgcard: "#FFFFFF",          // Fundo dos cards é branco puro
+          bgprimary: "#F9FAFB",        // Fundo de "hover" e cabeçalhos de tabela (mantido para contraste subtil)
+          
           text: "#333333",
           primary: "#58bc82",
           secondary: "#666e9a",
@@ -35,25 +33,18 @@ export const ThemeProvider = ({ children }) => {
           linkHoverColor: "#45a56b",
           buttonHover: "#45a56b",
           signupText: "#333333",
-  
-          bgcard: "#FFFFFF",
-          bgprimary: "#F9FAFB",
           bordercolor: "#E5E7EB",
           textprimary: "#111827",
           textsecondary: "#6B7280",
-  
           btnprimarybg: "#2563EB",
           btnprimaryhover: "#1D4ED8",
           btnprimarytext: "#FFFFFF",
-  
-          btnsecondarybg: "#E5E7EB",
-          btnsecondaryhover: "#D1D5DB",
-          btnsecondarytext: "#111827",
-  
+          btnsecondarybg: "#FFFFFF",
+          btnsecondaryhover: "#F9FAFB",
+          btnsecondarytext: "#374151",
           menubg: "#FFFFFF",
           menuborder: "#D1D5DB",
           menuactive: "#2563EB",
-  
           chartcolor1: "#3B82F6",
           chartcolor2: "#10B981",
           chartcolor3: "#F59E0B",
@@ -61,9 +52,9 @@ export const ThemeProvider = ({ children }) => {
           chartcolor5: "#8B5CF6",
         }
       : {
-          // Dark Theme
+          // Dark Theme (sem alterações)
           background: "#282c34",
-          text: "#ef4444",
+          text: "#F9FAFB",
           primary: "#009929",
           secondary: "#E76F00",
           border: "#444444",
@@ -75,43 +66,35 @@ export const ThemeProvider = ({ children }) => {
           focusBorder: "#54C241",
           linkColor: "#54C241",
           linkHoverColor: "#3B7D2B",
-          buttonHover: "#45a56b", // Ajuste conforme desejado
+          buttonHover: "#45a56b",
           signupText: "#FFF",
-  
           bgprimary: "#111827",
           bgcard: "#1F2937",
           bordercolor: "#374151",
           textprimary: "#F9FAFB",
           textsecondary: "#9CA3AF",
-  
           btnprimarybg: "#5ccb5f",
           btnprimaryhover: "#2563EB",
           btnprimarytext: "#FFFFFF",
-  
           btnsecondarybg: "#374151",
           btnsecondaryhover: "#4B5563",
           btnsecondarytext: "#F9FAFB",
-  
           menubg: "#1F2937",
           menuborder: "#374151",
           menuactive: "#3B82F6",
-  
           chartcolor1: "#3B82F6",
           chartcolor2: "#10B981",
           chartcolor3: "#F59E0B",
           chartcolor4: "#EF4444",
           chartcolor5: "#8B5CF6",
-        };
+        }
+  ), [theme]);
 
-  // Atualiza as custom properties do CSS se desejar (opcional)
   useEffect(() => {
     const root = document.documentElement;
-    root.style.setProperty("--background", colors.background);
-    root.style.setProperty("--text", colors.text);
-    root.style.setProperty("--primary", colors.primary);
-    root.style.setProperty("--border", colors.border);
-    root.style.setProperty("--buttonText", colors.buttonText);
-    // Adicione outras propriedades conforme necessário...
+    Object.keys(colors).forEach(key => {
+      root.style.setProperty(`--${key}`, colors[key]);
+    });
   }, [colors]);
 
   return (

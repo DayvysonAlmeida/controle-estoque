@@ -1,31 +1,10 @@
 // src/components/EquipmentFilters/EquipmentFilters.jsx
-import React, { useMemo, useEffect } from "react";
-import debounce from "lodash.debounce";
+import React from "react";
 import styles from "./EquipmentFilters.module.css";
+import ClearIcon from '@mui/icons-material/Clear';
 
 const EquipmentFilters = ({ filters, onFilterChange, onClearFilters }) => {
-  // Cria uma versão debounced que recebe o nome e o valor do campo
-  const debouncedOnFilterChange = useMemo(
-    () =>
-      debounce((fieldName, fieldValue) => {
-        // Cria um objeto similar ao evento para compatibilidade com o handler do componente pai
-        onFilterChange({ target: { name: fieldName, value: fieldValue } });
-      }, 150), // tempo de buscar o filtro
-    [onFilterChange]
-  );
-
-  // Cancela as chamadas pendentes do debounce quando o componente desmontar
-  useEffect(() => {
-    return () => {
-      debouncedOnFilterChange.cancel();
-    };
-  }, [debouncedOnFilterChange]);
-
-  // Handler que extrai os dados do input e chama a função debounced
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    debouncedOnFilterChange(name, value);
-  };
+  // A função 'handleInputChange' que causava o aviso foi removida.
 
   return (
     <div className={styles.filters}>
@@ -34,7 +13,7 @@ const EquipmentFilters = ({ filters, onFilterChange, onClearFilters }) => {
         name="nome"
         placeholder="Filtrar por Fornecedor"
         value={filters.nome}
-        onChange={handleInputChange}
+        onChange={onFilterChange}
         className={styles.input}
         aria-label="Filtrar por Fornecedor"
       />
@@ -43,7 +22,7 @@ const EquipmentFilters = ({ filters, onFilterChange, onClearFilters }) => {
         name="marca"
         placeholder="Filtrar por Marca"
         value={filters.marca}
-        onChange={handleInputChange}
+        onChange={onFilterChange}
         className={styles.input}
         aria-label="Filtrar por Marca"
       />
@@ -52,7 +31,7 @@ const EquipmentFilters = ({ filters, onFilterChange, onClearFilters }) => {
         name="categoria"
         placeholder="Filtrar por Categoria"
         value={filters.categoria}
-        onChange={handleInputChange}
+        onChange={onFilterChange}
         className={styles.input}
         aria-label="Filtrar por Categoria"
       />
@@ -61,7 +40,7 @@ const EquipmentFilters = ({ filters, onFilterChange, onClearFilters }) => {
         name="tombamento"
         placeholder="Filtrar por Tombamento"
         value={filters.tombamento}
-        onChange={handleInputChange}
+        onChange={onFilterChange}
         className={styles.input}
         aria-label="Filtrar por Tombamento"
       />
@@ -70,35 +49,36 @@ const EquipmentFilters = ({ filters, onFilterChange, onClearFilters }) => {
         name="modelo"
         placeholder="Filtrar por Modelo"
         value={filters.modelo}
-        onChange={handleInputChange}
+        onChange={onFilterChange}
         className={styles.input}
         aria-label="Filtrar por Modelo"
       />
-        <input
-          type="text"
-          name="serialnumber"
-          placeholder="Filtrar por SerialNumber"
-          value={filters.serialnumber}
-          onChange={handleInputChange}
-          className={styles.input}
-          aria-label="Filtrar por SerialNumber"
-        />
+      <input
+        type="text"
+        name="serialnumber"
+        placeholder="Filtrar por SerialNumber"
+        value={filters.serialnumber}
+        onChange={onFilterChange}
+        className={styles.input}
+        aria-label="Filtrar por SerialNumber"
+      />
       <select
         name="status"
         value={filters.status}
-        onChange={handleInputChange}
+        onChange={onFilterChange}
         className={styles.select}
         aria-label="Filtrar por Status"
       >
-        <option value="">Filtrar por Status</option>
+        <option value="">Todos os Status</option>
         <option value="Ativo">Ativo</option>
         <option value="Manutenção">Manutenção</option>
         <option value="Inativo">Inativo</option>
-        <option value="Inativo">Substituída</option>
-        <option value="Inativo">Backup</option>
+        <option value="Substituída">Substituída</option>
+        <option value="Backup">Backup</option>
       </select>
       <button onClick={onClearFilters} className={styles.button}>
-        Limpar Filtros
+        <ClearIcon fontSize="small" />
+        <span>Limpar</span>
       </button>
     </div>
   );

@@ -25,21 +25,21 @@ services:
   #     - mysql_data:/var/lib/mysql
 
   # ---- FRONTEND DESENVOLVIMENTO ----
-  frontend-dev:
-    build:
-      context: ./controle-estoque
-      target: dev
-    container_name: react_dev
-    volumes:
-      - ./controle-estoque:/app
-      - /app/node_modules
-    ports:
-      - "3000:3000"
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-    depends_on:
-      - web
-    restart: always
+  # frontend-dev:
+  #   build:
+  #     context: ./controle-estoque
+  #     target: dev
+  #   container_name: react_dev
+  #   volumes:
+  #     - ./controle-estoque:/app
+  #     - /app/node_modules
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - CHOKIDAR_USEPOLLING=true
+  #   depends_on:
+  #     - web
+  #   restart: always
 
   # ---- FRONTEND PRODUÇÃO ----
   frontend-prod:

@@ -22,10 +22,35 @@ class EquipmentViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, EquipmentPermission]
 
     def get_queryset(self):
-        qs = super().get_queryset().order_by("-id")  # Ordena pelo ID de forma decrescente
-        estoque_param = self.request.query_params.get('estoque')
-        if estoque_param:
-            qs = qs.filter(estoque=estoque_param)
+        """
+        Versão corrigida que aplica os filtros de forma segura.
+        """
+        qs = super().get_queryset().order_by("-id")
+        params = self.request.query_params
+
+        # Filtro por estoque (CORRIGIDO)
+        estoque_id = params.get('estoque')
+        if estoque_id:
+            # A forma correta de filtrar por uma ForeignKey
+            qs = qs.filter(estoque=estoque_id)
+
+        # Filtros de texto (busca "contém", ignorando maiúsculas/minúsculas)
+        text_filters = ['nome', 'marca', 'modelo', 'serialnumber', 'ip', 'categoria']
+        for field in text_filters:
+            value = params.get(field)
+            if value:
+                qs = qs.filter(**{f'{field}__icontains': value})
+
+        # Filtro de texto exato para tombamento
+        tombamento = params.get('tombamento')
+        if tombamento:
+            qs = qs.filter(tombamento__icontains=tombamento)
+
+        # Filtro de correspondência exata para status
+        status_filter = params.get('status')
+        if status_filter:
+            qs = qs.filter(status=status_filter)
+
         return qs
 
     def create(self, request, *args, **kwargs):
@@ -43,13 +68,16 @@ class EquipmentViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         equipment = self.get_object()
-        old_stock = equipment.estoque_id  # Armazena o estoque anterior
+        old_stock = equipment.estoque_id
         
-        # Copia dos dados enviados para não alterar a request original
         data = request.data.copy()
         
-        # Se o usuário não for administrador, sobrescreve os campos 'tombamento' e 'serialnumber'
-        if request.user.role != "admin":
+        # --- LÓGICA DE SEGURANÇA RESTAURADA E MELHORADA ---
+        # Verifica se o usuário NÃO é admin ou superuser
+        is_admin = request.user.is_superuser or request.user.groups.filter(name="Administrador").exists()
+        if not is_admin:
+            # Restaura a sua lógica original, que estava correta:
+            # Sobrescreve os dados da requisição com os valores existentes no banco.
             data["tombamento"] = equipment.tombamento
             data["serialnumber"] = equipment.serialnumber
 
@@ -72,7 +100,6 @@ class EquipmentViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def get_serializer_context(self):
-        # Certifique-se de passar a request no contexto
         context = super().get_serializer_context()
         context["request"] = self.request
         return context

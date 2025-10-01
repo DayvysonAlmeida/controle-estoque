@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+// src/pages/Dashboard/Dashboard.js
+import React, { useEffect, useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom"; // --- 1. IMPORTAR O useNavigate ---
 import { useTheme } from "../../theme/theme";
 import { Bar, Pie } from "react-chartjs-2";
 import {
@@ -14,244 +16,188 @@ import {
 import api from "../../services/api";
 import styles from "./Dashboard.module.css";
 
-// Registra os componentes necessários do Chart.js
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
 const Dashboard = () => {
   const { colors } = useTheme();
+  const navigate = useNavigate(); // --- 2. INICIAR O useNavigate ---
 
-  // Estados para os dados
   const [profile, setProfile] = useState(null);
   const [estoques, setEstoques] = useState([]);
-  // Armazena o objeto do estoque selecionado (com id e nome atualizado)
   const [selectedStock, setSelectedStock] = useState(null);
   const [allEquipmentsByStock, setAllEquipmentsByStock] = useState({});
+  const [loading, setLoading] = useState(true);
 
-  // Busca os dados do perfil (incluindo estoques)
+  // --- 3. CRIAR A FUNÇÃO DE NAVEGAÇÃO ---
+  const handleCardClick = (status) => {
+    if (!selectedStock) return; // Não faz nada se nenhum estoque estiver selecionado
+    // Navega para a lista de equipamentos, passando o filtro de status no 'state'
+    navigate(`/estoque/${selectedStock.id}`, {
+      state: { status: status },
+    });
+  };
+
   useEffect(() => {
-    const fetchProfileData = async () => {
+    const fetchInitialData = async () => {
       try {
         const profileRes = await api.get("profile/");
         const profileData = profileRes.data;
         setProfile(profileData);
 
-        if (profileData.estoques) {
-          // Se não for array, transforma em array
-          const stocksArray = Array.isArray(profileData.estoques)
-            ? profileData.estoques
-            : [profileData.estoques];
+        const userStockIds = profileData.estoques || [];
+        if (userStockIds.length > 0) {
+          const stocksRes = await api.get("estoques/");
+          const allStocks = stocksRes.data.results || stocksRes.data;
+          
+          const userStocks = allStocks
+            .filter(stock => userStockIds.includes(stock.id))
+            .map(stock => ({ id: stock.id, nome: stock.nome || stock.name }));
 
-          // Mapeia cada item para um objeto com { id, nome }
-          // Se a API não fornecer o nome, usamos o fallback "Estoque {id}"
-          const userStocks = stocksArray.map((stock) => ({
-            id: stock.id || stock,
-            nome: stock.nome || stock.name || `Estoque ${stock}`
-          }));
-
-          console.log("Estoques mapeados:", userStocks);
           setEstoques(userStocks);
-
-          if (userStocks.length > 0 && !selectedStock) {
-            // Seleciona automaticamente o primeiro estoque da lista
+          if (userStocks.length > 0) {
             setSelectedStock(userStocks[0]);
           }
-        } else {
-          console.warn("Formato inesperado de estoques:", profileData.estoques);
-          setEstoques([]);
+
+          const equipmentsRes = await api.get("equipments/");
+          const equipmentsData = equipmentsRes.data.results || equipmentsRes.data;
+          
+          const groupedEquipments = userStocks.reduce((acc, estoque) => {
+            acc[estoque.id] = equipmentsData.filter(eq => (eq.estoque?.id || eq.estoque) === estoque.id);
+            return acc;
+          }, {});
+          setAllEquipmentsByStock(groupedEquipments);
         }
       } catch (error) {
-        console.error("Erro ao buscar perfil:", error);
+        console.error("Erro ao buscar dados do dashboard:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchProfileData();
+    fetchInitialData();
   }, []);
 
-  // Busca todos os equipamentos e os agrupa pelo estoque (usando o id do estoque)
-  useEffect(() => {
-    const fetchEquipmentsData = async () => {
-      try {
-        const response = await api.get("equipments/");
-        const equipmentsData = response.data.results || response.data;
-
-        const groupedEquipments = estoques.reduce((acc, estoque) => {
-          acc[estoque.id] = equipmentsData.filter((eq) => {
-            // Se o equipamento vier com o objeto de estoque, compara pelo id; senão, compara diretamente
-            if (eq.estoque && typeof eq.estoque === "object") {
-              return eq.estoque.id === estoque.id;
-            }
-            return eq.estoque === estoque.id;
-          });
-          return acc;
-        }, {});
-
-        setAllEquipmentsByStock(groupedEquipments);
-      } catch (error) {
-        console.error("Erro ao buscar equipamentos:", error);
-      }
+  const metrics = useMemo(() => {
+    const equipments = selectedStock ? allEquipmentsByStock[selectedStock.id] || [] : [];
+    const getCount = (status) => equipments.filter(eq => eq.status === status).length;
+    return {
+      total: equipments.length,
+      ativo: getCount("Ativo"),
+      manutencao: getCount("Manutenção"),
+      inativo: getCount("Inativo"),
+      substituida: getCount("Substituída"),
+      backup: getCount("Backup"),
     };
+  }, [selectedStock, allEquipmentsByStock]);
 
-    if (estoques.length > 0) {
-      fetchEquipmentsData();
-    }
-  }, [estoques]);
-
-  // Efeito para buscar detalhes do estoque selecionado se necessário,
-  // e atualizar tanto o selectedStock quanto o array de estoques.
-  useEffect(() => {
-    const fetchStockDetail = async () => {
-      if (
-        selectedStock &&
-        selectedStock.id &&
-        // Verifica se o nome atual é um fallback (inicia com "Estoque ")
-        selectedStock.nome.startsWith("Estoque ")
-      ) {
-        try {
-          const response = await api.get(`estoques/${selectedStock.id}`);
-          const stockDetail = response.data;
-          console.log("Detalhe do estoque:", stockDetail);
-          // Atualiza o selectedStock com os detalhes completos
-          setSelectedStock((prev) => ({
-            ...prev,
-            ...stockDetail,
-          }));
-          // Atualiza o array de estoques com os detalhes encontrados
-          setEstoques((prevEstoques) =>
-            prevEstoques.map((stock) =>
-              stock.id === selectedStock.id ? { ...stock, ...stockDetail } : stock
-            )
-          );
-        } catch (error) {
-          console.error("Erro ao buscar detalhe do estoque:", error);
-        }
-      }
-    };
-    fetchStockDetail();
-  }, [selectedStock?.id, selectedStock?.nome]);
-
-  // Obtém os equipamentos do estoque selecionado
-  const equipments = selectedStock
-    ? allEquipmentsByStock[selectedStock.id] || []
-    : [];
-
-  // Cálculo das métricas para o estoque selecionado
-  const totalEquipments = equipments.length;
-  const activeEquipments = equipments.filter((eq) => eq.status === "Ativo").length;
-  const maintenanceEquipments = equipments.filter((eq) => eq.status === "Manutenção").length;
-  const inactiveEquipments = equipments.filter((eq) => eq.status === "Inativo").length;
-
-  // Dados para o gráfico de barras (equipamentos por status)
   const barChartData = {
-    labels: ["Ativo", "Manutenção", "Inativo"],
+    labels: ["Ativo", "Manutenção", "Inativo", "Substituído", "Backup"],
     datasets: [
       {
         label: "Equipamentos por Status",
-        data: [activeEquipments, maintenanceEquipments, inactiveEquipments],
+        data: [metrics.ativo, metrics.manutencao, metrics.inativo, metrics.substituida, metrics.backup],
         backgroundColor: [
-          colors.chartcolor1,
           colors.chartcolor2,
           colors.chartcolor3,
+          colors.textsecondary,
+          colors.chartcolor1,
+          colors.chartcolor5,
         ],
       },
     ],
   };
 
-  // Cálculo dos totais por estoque usando os equipamentos de todos os estoques
   const equipmentCountByStock = estoques.map((estoque) => {
     return allEquipmentsByStock[estoque.id]?.length || 0;
   });
 
-  // Dados para o gráfico de pizza (distribuição de equipamentos por estoque)
   const pieChartData = {
     labels: estoques.map((estoque) => estoque.nome),
     datasets: [
       {
         data: equipmentCountByStock,
-        backgroundColor: estoques.map(
-          (_, index) => colors[`chartcolor${index + 1}`]
-        ),
+        backgroundColor: estoques.map((_, index) => colors[`chartcolor${(index % 5) + 1}`]),
+        borderColor: colors.bgcard,
+        borderWidth: 2,
       },
     ],
   };
 
-  if (!profile) {
-    return (
-      <p className={styles.loading} style={{ color: colors.text }}>
-        Carregando...
-      </p>
-    );
+  if (loading) {
+    return <p className={styles.loading}>Carregando...</p>;
   }
 
   return (
-    <div
-      className={styles.dashboardContainer}
-      style={{ backgroundColor: colors.background }}
-    >
-      <div className={styles.dashboardContent}>
-        <header className={styles.header}>
-          <h1 className={styles.dashboardTitle} style={{ color: colors.textprimary }}>
-            Dashboard - {selectedStock?.nome || "Selecione um Estoque"}
+    <div className={styles.dashboardContainer}>
+      <header className={styles.header}>
+        <div>
+          <h1 className={styles.dashboardTitle}>
+            Dashboard: {selectedStock?.nome || "Geral"}
           </h1>
-          <p className={styles.welcomeMessage} style={{ color: colors.text }}>
-            Bem-vindo, {profile.nome}!
+          <p className={styles.welcomeMessage}>
+            Bem-vindo de volta, {profile?.nome}!
           </p>
-          {estoques.length > 1 && (
-            <select
-              value={selectedStock?.id || ""}
-              onChange={(e) => {
-                const idSelecionado = Number(e.target.value);
-                const stock = estoques.find((s) => s.id === idSelecionado);
-                setSelectedStock(stock);
-              }}
-              style={{
-                marginTop: "1rem",
-                padding: "0.5rem",
-                fontSize: "1rem",
-                borderRadius: "4px",
-                border: `1px solid ${colors.border}`,
-                backgroundColor: colors.background,
-                color: colors.text,
-              }}
-            >
-              {estoques.map((estoque) => (
-                <option key={estoque.id} value={estoque.id}>
-                  {estoque.nome}
-                </option>
-              ))}
-            </select>
-          )}
-        </header>
+        </div>
+        {estoques.length > 1 && (
+          <select
+            className={styles.stockSelector}
+            value={selectedStock?.id || ""}
+            onChange={(e) => {
+              const stock = estoques.find((s) => s.id === Number(e.target.value));
+              setSelectedStock(stock);
+            }}
+          >
+            {estoques.map((estoque) => (
+              <option key={estoque.id} value={estoque.id}>
+                {estoque.nome}
+              </option>
+            ))}
+          </select>
+        )}
+      </header>
 
-        <section className={styles.metrics}>
-          <div className={styles.card} style={{ backgroundColor: colors.chartcolor5 }}>
-            <h3 className={styles.cardTitle}>Total de Equipamentos</h3>
-            <p className={styles.cardValue}>{totalEquipments}</p>
-          </div>
-          <div className={styles.card} style={{ backgroundColor: colors.chartcolor4 }}>
-            <h3 className={styles.cardTitle}>Equipamentos Ativos</h3>
-            <p className={styles.cardValue}>{activeEquipments}</p>
-          </div>
-          <div className={styles.card} style={{ backgroundColor: colors.chartcolor3 }}>
-            <h3 className={styles.cardTitle}>Em Manutenção</h3>
-            <p className={styles.cardValue}>{maintenanceEquipments}</p>
-          </div>
-          <div className={styles.card} style={{ backgroundColor: colors.chartcolor2 }}>
-            <h3 className={styles.cardTitle}>Inativos</h3>
-            <p className={styles.cardValue}>{inactiveEquipments}</p>
-          </div>
-        </section>
+      {/* --- 4. ADICIONAR O onClick AOS CARTÕES --- */}
+      <section className={styles.metricsGrid}>
+        <div className={`${styles.card} ${styles.clickableCard}`} onClick={() => handleCardClick("")}>
+          <h3 className={styles.cardTitle}>Total</h3>
+          <p className={styles.cardValue}>{metrics.total}</p>
+        </div>
+        <div className={`${styles.card} ${styles.clickableCard}`} onClick={() => handleCardClick("Ativo")}>
+          <h3 className={styles.cardTitle}>Ativos</h3>
+          <p className={styles.cardValue} style={{ color: colors.chartcolor2 }}>{metrics.ativo}</p>
+        </div>
+        <div className={`${styles.card} ${styles.clickableCard}`} onClick={() => handleCardClick("Manutenção")}>
+          <h3 className={styles.cardTitle}>Manutenção</h3>
+          <p className={styles.cardValue} style={{ color: colors.chartcolor3 }}>{metrics.manutencao}</p>
+        </div>
+        <div className={`${styles.card} ${styles.clickableCard}`} onClick={() => handleCardClick("Inativo")}>
+          <h3 className={styles.cardTitle}>Inativos</h3>
+          <p className={styles.cardValue} style={{ color: colors.textsecondary }}>{metrics.inativo}</p>
+        </div>
+        <div className={`${styles.card} ${styles.clickableCard}`} onClick={() => handleCardClick("Substituída")}>
+          <h3 className={styles.cardTitle}>Substituídos</h3>
+          <p className={styles.cardValue} style={{ color: colors.chartcolor1 }}>{metrics.substituida}</p>
+        </div>
+        <div className={`${styles.card} ${styles.clickableCard}`} onClick={() => handleCardClick("Backup")}>
+          <h3 className={styles.cardTitle}>Backup</h3>
+          <p className={styles.cardValue} style={{ color: colors.chartcolor5 }}>{metrics.backup}</p>
+        </div>
+      </section>
 
-        <section className={styles.charts}>
-          <div className={styles.chart}>
-            <h3 style={{ color: colors.text }}>Equipamentos por Status</h3>
-            <Bar key={`bar-${selectedStock?.id}`} data={barChartData} />
+      <section className={styles.chartsGrid}>
+        <div className={styles.chartCard}>
+          <h3>Equipamentos por Status</h3>
+          <div style={{ position: 'relative', height: '100%' }}>
+            <Bar data={barChartData} options={{ maintainAspectRatio: false, color: colors.textprimary, plugins: { legend: { display: false } } }} />
           </div>
-          <div className={styles.chart} style={{ height: "300px" }}>
-            <h3 style={{ color: colors.text }}>Equipamentos por Estoque</h3>
-            <Pie key={`pie-${selectedStock?.id}`} data={pieChartData} options={{ maintainAspectRatio: false }} />
+        </div>
+        <div className={styles.chartCard}>
+          <h3>Distribuição por Estoque</h3>
+          <div style={{ position: 'relative', height: '100%' }}>
+            <Pie data={pieChartData} options={{ maintainAspectRatio: false, color: colors.textprimary, plugins: { legend: { position: 'right', labels: { color: colors.textprimary } } } }} />
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </div>
   );
 };

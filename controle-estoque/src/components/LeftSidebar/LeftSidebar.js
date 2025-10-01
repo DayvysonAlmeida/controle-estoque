@@ -1,151 +1,103 @@
 // src/components/LeftSidebar/LeftSidebar.js
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useTheme } from "../../theme/theme";
 import styles from "./LeftSidebar.module.css";
 import api from "../../services/api";
 import logo from "../../assets/logo.png";
+import AssessmentIcon from '@mui/icons-material/Assessment';
+// import SettingsIcon from '@mui/icons-material/Settings';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import { useTheme } from "../../theme/theme";
+import WbSunnyIcon from '@mui/icons-material/WbSunny';
+import ModeNightIcon from '@mui/icons-material/ModeNight';
 
-const LeftSidebar = ({ onSelectStock, isCollapsed, toggleSidebar }) => {
+const LeftSidebar = ({ isSidebarOpen, toggleSidebar }) => {
   const [estoques, setEstoques] = useState([]);
-  const [userEstoqueIds, setUserEstoqueIds] = useState([]);
   const [userProfile, setUserProfile] = useState(null);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-
+  
   const navigate = useNavigate();
   const location = useLocation();
-  const { colors } = useTheme();
+  const { theme, toggleTheme } = useTheme();
 
-  // Detecta mudança de tamanho da tela
   useEffect(() => {
-    const handleResize = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
-      if (mobile) toggleSidebar(false);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [toggleSidebar]);
-
-  // Busca perfil do usuário
-  useEffect(() => {
-    async function fetchUserProfile() {
-      try {
-        const response = await api.get("profile/");
-        setUserProfile(response.data);
-        setUserEstoqueIds(response.data.estoques || []);
-      } catch (error) {
-        console.error("Erro ao buscar o perfil do usuário:", error);
-      }
+    async function fetchProfileAndStocks() {
+        try {
+            const profileRes = await api.get("profile/");
+            setUserProfile(profileRes.data);
+            const userEstoqueIds = profileRes.data.estoques || [];
+            if (userEstoqueIds.length > 0) {
+                const stocksRes = await api.get("estoques/");
+                const allStocks = stocksRes.data.results || stocksRes.data;
+                const filteredStocks = allStocks.filter(stock => userEstoqueIds.includes(stock.id));
+                setEstoques(filteredStocks.map(stock => ({ id: stock.id, nome: stock.nome || stock.name })));
+            }
+        } catch (error) {
+            console.error("Erro ao buscar dados da sidebar:", error);
+        }
     }
-    fetchUserProfile();
+    fetchProfileAndStocks();
   }, []);
 
-  // Busca estoques filtrados pelo perfil
-  useEffect(() => {
-    async function fetchStocks() {
-      try {
-        const response = await api.get("estoques/");
-        const allStocks = response.data.results || response.data;
-        const filteredStocks = allStocks.filter((stock) =>
-          userEstoqueIds.includes(stock.id)
-        );
-        setEstoques(
-          filteredStocks.map((stock) => ({
-            id: stock.id,
-            nome: stock.nome || stock.name,
-            descricao: stock.descricao,
-          }))
-        );
-      } catch (error) {
-        console.error("Erro ao buscar estoques:", error);
-      }
+  const isAdmin = () => {
+    if (!userProfile) return false;
+    if (userProfile.is_superuser) return true;
+    if (userProfile.groups && Array.isArray(userProfile.groups)) {
+      return userProfile.groups.some((group) => group.name === "Administrador");
     }
-    if (userEstoqueIds.length > 0) fetchStocks();
-  }, [userEstoqueIds]);
-
-  const handleNavigation = (path) => {
-    navigate(path);
-    if (isMobile) toggleSidebar();
+    return false;
   };
 
-  const isActive = (path) => (location.pathname === path ? styles.active : "");
+  const handleNavigation = (path) => navigate(path);
+  const isActive = (path) => (location.pathname.startsWith(path) ? styles.active : "");
 
-  // Determina classes CSS
-  const sidebarClass = [
-    styles.sidebarContainer,
-    isCollapsed ? styles.collapsed : styles.expanded,
-    isMobile ? (isCollapsed ? styles.mobileClosed : styles.mobileOpen) : "",
-  ].join(" ");
+  const sidebarClass = `${styles.sidebarContainer} ${ isSidebarOpen ? styles.expanded : styles.collapsed }`;
 
   return (
-    <div
-      className={sidebarClass}
-      style={{
-        backgroundColor: colors.sidebarBg || "#413e40",
-        color: colors.sidebarText || "#ecf0f1",
-      }}
-    >
-      {/* Header */}
+    <div className={sidebarClass}>
       <div className={styles.header}>
         <div className={styles.headerLeft}>
-          <img
-            src={logo}
-            alt="Logo"
-            className={isCollapsed ? styles.logoCollapsed : styles.logo}
-          />
+            <img src={logo} alt="Logo" className={!isSidebarOpen ? styles.logoCollapsed : styles.logo} />
         </div>
-        <div className={styles.headerRight}>
-          <button className={styles.toggleButton} onClick={toggleSidebar}>
-            {isCollapsed ? "☰" : "«"}
-          </button>
-        </div>
+        {!isMobile && (
+            <button className={styles.toggleButton} onClick={toggleSidebar}>
+                {isSidebarOpen ? "«" : "☰"}
+            </button>
+        )}
       </div>
-
-      {/* Navegação */}
-      {(!isCollapsed || isMobile) && (
-        <nav className={styles.nav}>
-          <button
-            className={`${styles.navItem} ${isActive("/dashboard")}`}
-            onClick={() => handleNavigation("/dashboard")}
-          >
-            Dashboard
+      <nav className={styles.nav}>
+        <button className={`${styles.navItem} ${isActive("/dashboard")}`} onClick={() => handleNavigation("/dashboard")}>
+            <DashboardIcon />
+            <span className={styles.navText}>Dashboard</span>
+        </button>
+        {estoques.map((estoque) => (
+          <button key={estoque.id} className={`${styles.navItem} ${isActive(`/estoque/${estoque.id}`)}`} onClick={() => handleNavigation(`/estoque/${estoque.id}`)}>
+            <InventoryIcon />
+            <span className={styles.navText}>{estoque.nome}</span>
           </button>
-
-          {estoques.map((estoque) => (
-            <button
-              key={estoque.id}
-              className={`${styles.navItem} ${
-                location.pathname === `/estoque/${estoque.id}` ? styles.active : ""
-              }`}
-              onClick={() => {
-                if (onSelectStock) onSelectStock(estoque.id);
-                handleNavigation(`/estoque/${estoque.id}`);
-              }}
-            >
-              {estoque.nome}
-            </button>
-          ))}
-
-          {userProfile && userProfile.role === "admin" && (
-            <button
-              className={`${styles.navItem} ${isActive("/logs")}`}
-              onClick={() => handleNavigation("/logs")}
-            >
-              Logs
-            </button>
-          )}
-
-          <button
-            className={`${styles.navItem} ${isActive("/settings")}`}
-            onClick={() => handleNavigation("/settings")}
-          >
-            Settings
+        ))}
+        {isAdmin() && (
+          <button className={`${styles.navItem} ${isActive("/logs")}`} onClick={() => handleNavigation("/logs")}>
+            <AssessmentIcon />
+            <span className={styles.navText}>Logs</span>
           </button>
-        </nav>
-      )}
+        )}
+        {/* <button className={`${styles.navItem} ${isActive("/settings")}`} onClick={() => handleNavigation("/settings")}>
+            <SettingsIcon />
+            <span className={styles.navText}>Settings</span>
+        </button> */}
+      </nav>
+      <div className={styles.themeToggleContainer}>
+          <WbSunnyIcon className={styles.themeIcon} />
+          <label className={styles.toggleSwitch}>
+              <input type="checkbox" checked={theme === 'dark'} onChange={toggleTheme} />
+              <span className={styles.slider}></span>
+          </label>
+          <ModeNightIcon className={styles.themeIcon} />
+      </div>
     </div>
   );
 };
 
+const isMobile = window.innerWidth < 768;
 export default LeftSidebar;

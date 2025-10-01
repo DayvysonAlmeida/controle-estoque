@@ -45,7 +45,7 @@ controle-estoque/.env
 .DS_Store
 Thumbs.db
 # Configura��es do docker
-
+*.zip
 
 *Dockerfile
 
