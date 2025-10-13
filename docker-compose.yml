@@ -1,6 +1,6 @@
 services:
   # ---- BACKEND (Django) ----
-  web:
+  backend:
     build: ./backend
     container_name: django_app
     command: gunicorn --bind 0.0.0.0:4000 mybackend.wsgi:application
@@ -12,6 +12,9 @@ services:
     #   - mysql
     env_file:
       - .env
+    restart: always
+
+    
 
   # mysql:
   #   image: mysql:8.0
@@ -42,11 +45,11 @@ services:
   #   restart: always
 
   # ---- FRONTEND PRODUÇÃO ----
-  frontend-prod:
+  frontend-react:
     build:
       context: ./controle-estoque
       target: prod
-    container_name: react_prod
+    container_name: react
     ports:
       - "3000:80"
     restart: always
