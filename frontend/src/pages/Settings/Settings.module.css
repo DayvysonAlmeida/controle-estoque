@@ -1,0 +1,51 @@
+/* src/pages/Settings/Settings.module.css */
+.container {
+  max-width: 700px;
+  margin: 20px auto;
+  padding: 0;
+  background-color: var(--bgcard);
+  border: 1px solid var(--bordercolor);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+.header {
+  padding: 32px;
+}
+.heading {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--textprimary);
+}
+.subheading {
+  margin-top: 8px;
+  font-size: 16px;
+  color: var(--textsecondary);
+}
+.content {
+  display: flex;
+  flex-direction: column;
+}
+.settingItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 24px 32px;
+  border-top: 1px solid var(--bordercolor);
+}
+.settingLabel {
+  display: flex;
+  flex-direction: column;
+}
+.labelText {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--textprimary);
+}
+.labelValue {
+  font-size: 14px;
+  color: var(--textsecondary);
+  margin-top: 4px;
+}
