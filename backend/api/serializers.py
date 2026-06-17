@@ -31,12 +31,21 @@ class EquipmentSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({
                 "tombamento": "Informe o tombamento ou marque 'sem_tombamento'."
             })
+            
+        request = self.context.get("request")
+        if request and request.user:
+            estoque = data.get("estoque")
+            if estoque and not (request.user.is_superuser or request.user.is_admin()):
+                if not request.user.estoques.filter(id=estoque.id).exists():
+                    raise serializers.ValidationError({
+                        "estoque": "Você não tem permissão neste estoque."
+                    })
 
         return data
 
     def update(self, instance, validated_data):
         request = self.context.get("request")
-        if request and request.user and request.user.role != "admin":
+        if request and request.user and not (request.user.is_superuser or request.user.is_admin()):
             validated_data.pop("tombamento", None)
             validated_data.pop("serialnumber", None)
         return super().update(instance, validated_data)

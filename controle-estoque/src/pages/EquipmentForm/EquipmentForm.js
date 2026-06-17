@@ -167,7 +167,8 @@ const EquipmentForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label className={styles.label}>Serial Number</label>
-            <input type="text" name="serialnumber" value={formData.serialnumber} onChange={handleChange} required className={styles.input} />
+            <input type="text" name="serialnumber" value={formData.serialnumber} onChange={handleChange} required className={`${styles.input} ${fieldErrors.serialnumber ? styles.inputError : ""}`} />
+            {fieldErrors.serialnumber && <div className={styles.errorText}>{fieldErrors.serialnumber[0]}</div>}
           </div>
         </div>
 

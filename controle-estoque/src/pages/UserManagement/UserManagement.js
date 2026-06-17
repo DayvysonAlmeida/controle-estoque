@@ -91,7 +91,15 @@ const UserManagement = () => {
                 <td className={styles.td}>{user.username}</td>
                 <td className={styles.td}>{user.email}</td>
                 <td className={styles.td}>{user.funcao || "-"}</td>
-                <td className={styles.td}>{user.role}</td>
+                <td className={styles.td}>
+                  <span className={`${styles.roleBadge} ${
+                    user.role === 'admin' ? styles.roleAdmin : 
+                    user.role === 'padrao' ? styles.rolePadrao : 
+                    styles.roleLeitor
+                  }`}>
+                    {user.role}
+                  </span>
+                </td>
                 <td className={`${styles.td} ${styles.centerAlign}`}>
                   <button title="Editar Utilizador" className={`${styles.actionButton} ${styles.editButton}`} onClick={() => handleEditUser(user.id)}>
                     <EditIcon fontSize="small" />

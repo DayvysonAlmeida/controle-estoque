@@ -4,6 +4,7 @@ import { useLocation, useParams, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import styles from "./EquipmentEdit.module.css";
 import { useNotification } from "../../contexts/NotificationProvider";
+import { isSuperUserOrAdmin } from "../../utils/authUtils";
 
 const EquipmentEdit = () => {
   const { id } = useParams();
@@ -27,7 +28,7 @@ const EquipmentEdit = () => {
     if (userProfileStr) {
       try {
         const userProfile = JSON.parse(userProfileStr);
-        if (userProfile.is_superuser || (userProfile.groups && userProfile.groups.some(g => g.name === "Administrador"))) {
+        if (isSuperUserOrAdmin(userProfile)) {
           setIsAdmin(true);
         }
       } catch (error) { console.error("Erro ao verificar perfil de admin:", error); }

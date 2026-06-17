@@ -8,41 +8,44 @@ services:
       - ./backend:/app
     ports:
       - "4000:4000"
-    # depends_on:
-    #   - mysql
+    depends_on:
+      - mysql
     env_file:
       - .env
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
     restart: always
 
     
 
-  # mysql:
-  #   image: mysql:8.0
-  #   container_name: mysql_db
-  #   restart: always
-  #   env_file:
-  #     - ./.env
-  #   ports:
-  #     - "3307:3306"
-  #   volumes:
-  #     - mysql_data:/var/lib/mysql
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
+    env_file:
+      - ./.env
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
 
   # ---- FRONTEND DESENVOLVIMENTO ----
-  # frontend-dev:
-  #   build:
-  #     context: ./controle-estoque
-  #     target: dev
-  #   container_name: react_dev
-  #   volumes:
-  #     - ./controle-estoque:/app
-  #     - /app/node_modules
-  #   ports:
-  #     - "3000:3000"
-  #   environment:
-  #     - CHOKIDAR_USEPOLLING=true
-  #   depends_on:
-  #     - web
-  #   restart: always
+  frontend-dev:
+    build:
+      context: ./controle-estoque
+      target: dev
+    container_name: react_dev
+    volumes:
+      - ./controle-estoque:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - backend
+    restart: always
 
   # ---- FRONTEND PRODUÇÃO ----
   frontend-react:
@@ -51,9 +54,9 @@ services:
       target: prod
     container_name: react
     ports:
-      - "3000:80"
+      - "8080:80"
     restart: always
 
-# volumes:
-#   mysql_data:
-#     driver: local
+volumes:
+  mysql_data:
+    driver: local

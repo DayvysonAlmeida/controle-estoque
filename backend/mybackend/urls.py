@@ -10,7 +10,8 @@ from api.views import (
     EstoqueViewSet,
     LogEquipamentoViewSet,
     GroupViewSet,
-    get_profile
+    get_profile,
+    dashboard_metrics
 )
 
 router = routers.DefaultRouter()
@@ -28,4 +29,5 @@ urlpatterns = [
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/profile/', get_profile, name='profile'),
+    path('api/dashboard-metrics/', dashboard_metrics, name='dashboard-metrics'),
 ]

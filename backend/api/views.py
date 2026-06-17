@@ -1,4 +1,5 @@
 from django.db import IntegrityError
+from django.db.models import Count
 from django.contrib.auth.models import Group
 from rest_framework import viewsets, permissions, status
 from rest_framework.permissions import IsAuthenticated
@@ -23,9 +24,15 @@ class EquipmentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """
-        Versão corrigida que aplica os filtros de forma segura.
+        Versão corrigida que aplica os filtros de forma segura (Tenant).
         """
         qs = super().get_queryset().order_by("-id")
+        user = self.request.user
+        
+        # Filtro de Tenant: Usuários padrão só veem equipamentos dos seus estoques permitidos
+        if not (user.is_superuser or user.is_admin()):
+            qs = qs.filter(estoque__in=user.estoques.all())
+
         params = self.request.query_params
 
         # Filtro por estoque (CORRIGIDO)
@@ -56,13 +63,7 @@ class EquipmentViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        try:
-            self.perform_create(serializer)
-        except IntegrityError:
-            return Response(
-                {"error": "Tombamento ou SerialNumber já cadastrado."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
@@ -72,24 +73,10 @@ class EquipmentViewSet(viewsets.ModelViewSet):
         
         data = request.data.copy()
         
-        # --- LÓGICA DE SEGURANÇA RESTAURADA E MELHORADA ---
-        # Verifica se o usuário NÃO é admin ou superuser
-        is_admin = request.user.is_superuser or request.user.groups.filter(name="Administrador").exists()
-        if not is_admin:
-            # Restaura a sua lógica original, que estava correta:
-            # Sobrescreve os dados da requisição com os valores existentes no banco.
-            data["tombamento"] = equipment.tombamento
-            data["serialnumber"] = equipment.serialnumber
-
         serializer = self.get_serializer(equipment, data=data, partial=True)
         serializer.is_valid(raise_exception=True)
-        try:
-            self.perform_update(serializer)
-        except IntegrityError:
-            return Response(
-                {"error": "Tombamento ou SerialNumber já cadastrado."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        self.perform_update(serializer)
+        
         new_stock = serializer.instance.estoque_id
         if old_stock != new_stock:
             EquipmentHistory.objects.create(
@@ -122,13 +109,11 @@ class EstoqueViewSet(viewsets.ModelViewSet):
     serializer_class = EstoqueSerializer
     permission_classes = [IsAuthenticated, EstoquePermission]
 
-def get_queryset(self):
-    user = self.request.user
-    # Se o usuário for superusuário ou pertencer ao grupo "Administrador", retorna todos os estoques.
-    if user.is_superuser or user.groups.filter(name="Administrador").exists():
-        return Estoque.objects.all()
-    # Caso contrário, retorna apenas os estoques associados ao usuário.
-    return user.estoques.all()
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_superuser or user.is_admin():
+            return Estoque.objects.all()
+        return user.estoques.all()
 
 
 class LogEquipamentoViewSet(viewsets.ReadOnlyModelViewSet):
@@ -155,3 +140,55 @@ def get_profile(request):
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def dashboard_metrics(request):
+    user = request.user
+    if user.is_superuser or user.is_admin():
+        user_estoques = Estoque.objects.all()
+    else:
+        user_estoques = user.estoques.all()
+
+    qs = Equipment.objects.filter(estoque__in=user_estoques)
+    
+    estoque_id = request.query_params.get('estoque')
+    if estoque_id:
+        qs = qs.filter(estoque_id=estoque_id)
+
+    status_counts = qs.values('status').annotate(total=Count('id'))
+    
+    metrics = {
+        "total": qs.count(),
+        "ativo": 0,
+        "manutencao": 0,
+        "inativo": 0,
+        "substituida": 0,
+        "backup": 0,
+    }
+    
+    status_map = {
+        "Ativo": "ativo",
+        "Manutenção": "manutencao",
+        "Inativo": "inativo",
+        "Substituída": "substituida",
+        "Backup": "backup",
+    }
+
+    for item in status_counts:
+        st = item['status']
+        if st in status_map:
+            metrics[status_map[st]] = item['total']
+
+    base_qs = Equipment.objects.filter(estoque__in=user_estoques)
+    estoque_counts = base_qs.values('estoque__id', 'estoque__nome').annotate(total=Count('id'))
+    
+    metrics["por_estoque"] = [
+        {
+            "id": item['estoque__id'],
+            "nome": item['estoque__nome'],
+            "total": item['total']
+        } for item in estoque_counts
+    ]
+
+    return Response(metrics)

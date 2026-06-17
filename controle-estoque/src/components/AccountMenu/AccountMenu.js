@@ -18,6 +18,7 @@ import Group from "@mui/icons-material/Group";
 import { useTheme } from "../../theme/theme";
 import api from "../../services/api";
 import styles from "./AccountMenu.module.css";
+import { isSuperUserOrAdmin } from "../../utils/authUtils";
 
 export default function AccountMenu() {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -25,12 +26,15 @@ export default function AccountMenu() {
   const navigate = useNavigate();
   const { colors } = useTheme();
   const [userName, setUserName] = React.useState("");
+  const [userProfile, setUserProfile] = React.useState(null);
 
   React.useEffect(() => {
     async function fetchProfile() {
       try {
         const response = await api.get("profile/");
         setUserName(response.data.nome);
+        setUserProfile(response.data);
+        localStorage.setItem("userProfile", JSON.stringify(response.data));
       } catch (error) {
         console.error("Erro ao buscar perfil:", error);
       }
@@ -39,15 +43,12 @@ export default function AccountMenu() {
   }, []);
 
   const isAdmin = () => {
+    if (userProfile) return isSuperUserOrAdmin(userProfile);
     const storedProfile = localStorage.getItem("userProfile");
     if (!storedProfile) return false;
     try {
-      const userProfile = JSON.parse(storedProfile);
-      if (userProfile.is_superuser) return true;
-      if (userProfile.groups && Array.isArray(userProfile.groups)) {
-        return userProfile.groups.some((group) => group.name === "Administrador");
-      }
-      return false;
+      const parsedProfile = JSON.parse(storedProfile);
+      return isSuperUserOrAdmin(parsedProfile);
     } catch (error) {
       console.error("Erro ao parsear userProfile do localStorage:", error);
       return false;

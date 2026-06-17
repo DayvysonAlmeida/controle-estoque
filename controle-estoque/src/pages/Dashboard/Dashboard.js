@@ -1,8 +1,14 @@
 // src/pages/Dashboard/Dashboard.js
 import React, { useEffect, useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom"; // --- 1. IMPORTAR O useNavigate ---
+import { useNavigate } from "react-router-dom"; 
 import { useTheme } from "../../theme/theme";
 import { Bar, Pie } from "react-chartjs-2";
+import InventoryIcon from '@mui/icons-material/Inventory';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import BuildIcon from '@mui/icons-material/Build';
+import CancelIcon from '@mui/icons-material/Cancel';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
+import SaveIcon from '@mui/icons-material/Save';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -25,18 +31,20 @@ const Dashboard = () => {
   const [profile, setProfile] = useState(null);
   const [estoques, setEstoques] = useState([]);
   const [selectedStock, setSelectedStock] = useState(null);
-  const [allEquipmentsByStock, setAllEquipmentsByStock] = useState({});
+  const [metrics, setMetrics] = useState({
+      total: 0, ativo: 0, manutencao: 0, inativo: 0, substituida: 0, backup: 0, por_estoque: []
+  });
   const [loading, setLoading] = useState(true);
 
   // --- 3. CRIAR A FUNÇÃO DE NAVEGAÇÃO ---
   const handleCardClick = (status) => {
-    if (!selectedStock) return; // Não faz nada se nenhum estoque estiver selecionado
-    // Navega para a lista de equipamentos, passando o filtro de status no 'state'
+    if (!selectedStock) return; 
     navigate(`/estoque/${selectedStock.id}`, {
       state: { status: status },
     });
   };
 
+  // Busca perfil e estoques iniciais
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
@@ -55,40 +63,37 @@ const Dashboard = () => {
 
           setEstoques(userStocks);
           if (userStocks.length > 0) {
-            setSelectedStock(userStocks[0]);
+            setSelectedStock(userStocks[0]); // Isso engatilhará o fetch das métricas
+          } else {
+             setLoading(false);
           }
-
-          const equipmentsRes = await api.get("equipments/");
-          const equipmentsData = equipmentsRes.data.results || equipmentsRes.data;
-          
-          const groupedEquipments = userStocks.reduce((acc, estoque) => {
-            acc[estoque.id] = equipmentsData.filter(eq => (eq.estoque?.id || eq.estoque) === estoque.id);
-            return acc;
-          }, {});
-          setAllEquipmentsByStock(groupedEquipments);
+        } else {
+             setLoading(false);
         }
       } catch (error) {
-        console.error("Erro ao buscar dados do dashboard:", error);
-      } finally {
+        console.error("Erro ao buscar dados do perfil:", error);
         setLoading(false);
       }
     };
-
     fetchInitialData();
   }, []);
 
-  const metrics = useMemo(() => {
-    const equipments = selectedStock ? allEquipmentsByStock[selectedStock.id] || [] : [];
-    const getCount = (status) => equipments.filter(eq => eq.status === status).length;
-    return {
-      total: equipments.length,
-      ativo: getCount("Ativo"),
-      manutencao: getCount("Manutenção"),
-      inativo: getCount("Inativo"),
-      substituida: getCount("Substituída"),
-      backup: getCount("Backup"),
-    };
-  }, [selectedStock, allEquipmentsByStock]);
+  // Busca as métricas dinâmicas via Backend (Leve e rápido)
+  useEffect(() => {
+     const fetchMetrics = async () => {
+         if (!selectedStock) return;
+         try {
+             setLoading(true);
+             const res = await api.get(`dashboard-metrics/?estoque=${selectedStock.id}`);
+             setMetrics(res.data);
+         } catch (error) {
+             console.error("Erro ao buscar métricas:", error);
+         } finally {
+             setLoading(false);
+         }
+     };
+     fetchMetrics();
+  }, [selectedStock]);
 
   const barChartData = {
     labels: ["Ativo", "Manutenção", "Inativo", "Substituído", "Backup"],
@@ -107,16 +112,12 @@ const Dashboard = () => {
     ],
   };
 
-  const equipmentCountByStock = estoques.map((estoque) => {
-    return allEquipmentsByStock[estoque.id]?.length || 0;
-  });
-
   const pieChartData = {
-    labels: estoques.map((estoque) => estoque.nome),
+    labels: metrics.por_estoque.map((e) => e.nome),
     datasets: [
       {
-        data: equipmentCountByStock,
-        backgroundColor: estoques.map((_, index) => colors[`chartcolor${(index % 5) + 1}`]),
+        data: metrics.por_estoque.map((e) => e.total),
+        backgroundColor: metrics.por_estoque.map((_, index) => colors[`chartcolor${(index % 5) + 1}`]),
         borderColor: colors.bgcard,
         borderWidth: 2,
       },
@@ -159,27 +160,45 @@ const Dashboard = () => {
       {/* --- 4. ADICIONAR O onClick AOS CARTÕES --- */}
       <section className={styles.metricsGrid}>
         <div className={`${styles.card} ${styles.clickableCard}`} onClick={() => handleCardClick("")}>
-          <h3 className={styles.cardTitle}>Total</h3>
+          <div className={styles.cardHeader}>
+             <h3 className={styles.cardTitle}>Total</h3>
+             <InventoryIcon className={styles.cardIcon} />
+          </div>
           <p className={styles.cardValue}>{metrics.total}</p>
         </div>
         <div className={`${styles.card} ${styles.clickableCard}`} onClick={() => handleCardClick("Ativo")}>
-          <h3 className={styles.cardTitle}>Ativos</h3>
+          <div className={styles.cardHeader}>
+             <h3 className={styles.cardTitle}>Ativos</h3>
+             <CheckCircleIcon className={styles.cardIcon} style={{ color: colors.chartcolor2 }} />
+          </div>
           <p className={styles.cardValue} style={{ color: colors.chartcolor2 }}>{metrics.ativo}</p>
         </div>
         <div className={`${styles.card} ${styles.clickableCard}`} onClick={() => handleCardClick("Manutenção")}>
-          <h3 className={styles.cardTitle}>Manutenção</h3>
+          <div className={styles.cardHeader}>
+             <h3 className={styles.cardTitle}>Manutenção</h3>
+             <BuildIcon className={styles.cardIcon} style={{ color: colors.chartcolor3 }} />
+          </div>
           <p className={styles.cardValue} style={{ color: colors.chartcolor3 }}>{metrics.manutencao}</p>
         </div>
         <div className={`${styles.card} ${styles.clickableCard}`} onClick={() => handleCardClick("Inativo")}>
-          <h3 className={styles.cardTitle}>Inativos</h3>
+          <div className={styles.cardHeader}>
+             <h3 className={styles.cardTitle}>Inativos</h3>
+             <CancelIcon className={styles.cardIcon} style={{ color: colors.textsecondary }} />
+          </div>
           <p className={styles.cardValue} style={{ color: colors.textsecondary }}>{metrics.inativo}</p>
         </div>
         <div className={`${styles.card} ${styles.clickableCard}`} onClick={() => handleCardClick("Substituída")}>
-          <h3 className={styles.cardTitle}>Substituídos</h3>
+          <div className={styles.cardHeader}>
+             <h3 className={styles.cardTitle}>Substituídos</h3>
+             <AutorenewIcon className={styles.cardIcon} style={{ color: colors.chartcolor1 }} />
+          </div>
           <p className={styles.cardValue} style={{ color: colors.chartcolor1 }}>{metrics.substituida}</p>
         </div>
         <div className={`${styles.card} ${styles.clickableCard}`} onClick={() => handleCardClick("Backup")}>
-          <h3 className={styles.cardTitle}>Backup</h3>
+          <div className={styles.cardHeader}>
+             <h3 className={styles.cardTitle}>Backup</h3>
+             <SaveIcon className={styles.cardIcon} style={{ color: colors.chartcolor5 }} />
+          </div>
           <p className={styles.cardValue} style={{ color: colors.chartcolor5 }}>{metrics.backup}</p>
         </div>
       </section>

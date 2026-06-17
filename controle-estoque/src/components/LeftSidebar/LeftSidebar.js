@@ -11,6 +11,7 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 import { useTheme } from "../../theme/theme";
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import ModeNightIcon from '@mui/icons-material/ModeNight';
+import { isSuperUserOrAdmin } from "../../utils/authUtils";
 
 const LeftSidebar = ({ isSidebarOpen, toggleSidebar }) => {
   const [estoques, setEstoques] = useState([]);
@@ -39,14 +40,7 @@ const LeftSidebar = ({ isSidebarOpen, toggleSidebar }) => {
     fetchProfileAndStocks();
   }, []);
 
-  const isAdmin = () => {
-    if (!userProfile) return false;
-    if (userProfile.is_superuser) return true;
-    if (userProfile.groups && Array.isArray(userProfile.groups)) {
-      return userProfile.groups.some((group) => group.name === "Administrador");
-    }
-    return false;
-  };
+  const isAdmin = () => isSuperUserOrAdmin(userProfile);
 
   const handleNavigation = (path) => navigate(path);
   const isActive = (path) => (location.pathname.startsWith(path) ? styles.active : "");

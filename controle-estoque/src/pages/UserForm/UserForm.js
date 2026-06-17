@@ -9,7 +9,6 @@ const UserForm = () => {
   const navigate = useNavigate();
   const { showNotification } = useNotification();
   const [availableStocks, setAvailableStocks] = useState([]);
-  const [groups, setGroups] = useState([]);
 
   useEffect(() => {
     async function fetchInitialData() {
@@ -17,10 +16,6 @@ const UserForm = () => {
         const stocksRes = await api.get("estoques/");
         const stocksData = stocksRes.data.results || stocksRes.data;
         setAvailableStocks(Array.isArray(stocksData) ? stocksData : []);
-
-        const groupsRes = await api.get("groups/");
-        const groupsData = groupsRes.data.results || groupsRes.data;
-        setGroups(Array.isArray(groupsData) ? groupsData : []);
       } catch (error) {
         console.error("Erro ao buscar dados iniciais:", error);
         showNotification("Falha ao carregar dados para o formulário.", "error");
@@ -30,7 +25,7 @@ const UserForm = () => {
   }, [showNotification]);
 
   const [formData, setFormData] = useState({
-    nome: "", email: "", username: "", password: "", funcao: "", estoques: [],
+    nome: "", email: "", username: "", senha: "", funcao: "", role: "padrao", estoques: [],
   });
   const [fieldErrors, setFieldErrors] = useState({});
 
@@ -105,15 +100,21 @@ const UserForm = () => {
             {fieldErrors.password && <div className={styles.errorText}>{fieldErrors.password[0]}</div>}
           </div>
         </div>
-        <div className={styles.formGroup}>
-          <label className={styles.label}>Função / Grupo</label>
-          <select name="funcao" value={formData.funcao} onChange={handleChange} required className={`${styles.input} ${fieldErrors.funcao ? styles.inputError : ""}`}>
-            <option value="">Selecione...</option>
-            {groups.map((group) => (
-              <option key={group.id} value={group.name}>{group.name}</option>
-            ))}
-          </select>
-          {fieldErrors.funcao && <div className={styles.errorText}>{fieldErrors.funcao[0]}</div>}
+        <div className={styles.formRow}>
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Função (Cargo)</label>
+            <input type="text" name="funcao" value={formData.funcao} onChange={handleChange} className={`${styles.input} ${fieldErrors.funcao ? styles.inputError : ""}`} />
+            {fieldErrors.funcao && <div className={styles.errorText}>{fieldErrors.funcao[0]}</div>}
+          </div>
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Nível de Acesso (Role)</label>
+            <select name="role" value={formData.role} onChange={handleChange} required className={`${styles.input} ${fieldErrors.role ? styles.inputError : ""}`}>
+              <option value="leitor">Leitor (Apenas Visualizar)</option>
+              <option value="padrao">Padrão (Criar/Editar)</option>
+              <option value="admin">Administrador (Acesso Total)</option>
+            </select>
+            {fieldErrors.role && <div className={styles.errorText}>{fieldErrors.role[0]}</div>}
+          </div>
         </div>
         <div className={styles.formGroup}>
           <label className={styles.label}>Acesso aos Estoques</label>

@@ -162,4 +162,48 @@
 
 .clickableCard {
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.clickableCard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--btnsecondarybg);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 0;
+}
+
+.clickableCard:hover::before {
+  opacity: 1;
+}
+
+.cardTitle, .cardValue, .cardIcon {
+  position: relative;
+  z-index: 1;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.cardTitle {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 0;
+  color: var(--textsecondary);
+  text-transform: uppercase;
+}
+
+.cardIcon {
+  color: var(--textsecondary);
+  opacity: 0.5;
 }

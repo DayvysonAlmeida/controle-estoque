@@ -20,6 +20,7 @@ import { CSVLink } from "react-csv";
 // --- A CORREÇÃO ESTÁ AQUI ---
 import jsPDF from "jspdf";
 import autoTable from 'jspdf-autotable'; // Importação corrigida
+import { hasManagePermission, canDelete } from "../../utils/authUtils";
 
 const EquipmentList = () => {
   const { estoqueId } = useParams();
@@ -122,25 +123,8 @@ const EquipmentList = () => {
     }
   };
 
-    const hasManagePermission = () => {
-    if (!currentUser) return false;
-    if (currentUser.is_superuser) return true;
-    if (currentUser.groups && Array.isArray(currentUser.groups)) {
-      return currentUser.groups.some(
-        (group) => group.name === "Administrador" || group.name === "Padrão"
-      );
-    }
-    return false;
-  };
-
-  const canDelete = () => {
-    if (!currentUser) return false;
-    if (currentUser.is_superuser) return true;
-    if (currentUser.groups && Array.isArray(currentUser.groups)) {
-      return currentUser.groups.some((group) => group.name === "Administrador");
-    }
-    return false;
-  };
+    const hasManagePermissionLocal = () => hasManagePermission(currentUser);
+  const canDeleteLocal = () => canDelete(currentUser);
 
   useEffect(() => {
     async function fetchProfile() {
@@ -288,7 +272,7 @@ const EquipmentList = () => {
       />
   
       <div className={styles.actionsContainer}>
-        {hasManagePermission() && (
+        {hasManagePermissionLocal() && (
           <button onClick={handleNewEquipment} className={styles.button}>
             + Adicionar Equipamento
           </button>
@@ -348,12 +332,12 @@ const EquipmentList = () => {
                   </span>
                 </td>
                 <td className={`${styles.td} ${styles.centerAlign}`}>
-                  {hasManagePermission() && (
+                  {hasManagePermissionLocal() && (
                     <>
                       <button title="Editar Equipamento" className={`${styles.actionButton} ${styles.editButton}`} onClick={() => handleEditEquipment(equipment)}>
                         <EditIcon fontSize="small" />
                       </button>
-                      {canDelete() && (
+                      {canDeleteLocal() && (
                         <button title="Excluir Equipamento" className={`${styles.actionButton} ${styles.deleteButton}`} onClick={() => handleOpenDeleteDialog(equipment.id)}>
                           <DeleteForeverIcon fontSize="small" />
                         </button>

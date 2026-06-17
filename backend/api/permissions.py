@@ -14,22 +14,22 @@ class EquipmentPermission(BasePermission):
         if request.method in SAFE_METHODS:
             return True
 
-        # Se o usuário for superusuário ou pertence ao grupo "Administrador", permitir acesso total.
-        if request.user.is_superuser or request.user.groups.filter(name="Administrador").exists():
+        # Se o usuário for superusuário ou administrador, permitir acesso total.
+        if request.user.is_superuser or request.user.is_admin():
             return True
 
-        # Se o usuário pertence ao grupo "Padrão", permitir criação e atualização, mas não DELETE.
-        if request.user.groups.filter(name="Padrão").exists():
+        # Se o usuário for padrão, permitir criação e atualização, mas não DELETE.
+        if request.user.role == 'padrao':
             return request.method != 'DELETE'
 
-        # Usuários do grupo "Leitor" (ou sem grupo específico) não podem fazer métodos não seguros.
+        # Usuários leitores (ou sem grupo específico) não podem fazer métodos não seguros.
         return False
 
 class EstoquePermission(BasePermission):
     """
     Permissão para o EstoqueViewSet:
       - Métodos seguros serão permitidos para todos os perfis.
-      - Apenas usuários do grupo "Administrador" (ou superusuários) podem criar, atualizar ou deletar estoques.
+      - Apenas usuários "Administrador" (ou superusuários) podem criar, atualizar ou deletar estoques.
     """
     def has_permission(self, request, view):
         if not request.user.is_authenticated:
@@ -38,14 +38,14 @@ class EstoquePermission(BasePermission):
         if request.method in SAFE_METHODS:
             return True
 
-        # Permite alterações somente aos superusuários ou aos que pertencem ao grupo "Administrador"
-        return request.user.is_superuser or request.user.groups.filter(name="Administrador").exists()
+        # Permite alterações somente aos superusuários ou aos administradores
+        return request.user.is_superuser or request.user.is_admin()
 
 class CustomUserPermission(BasePermission):
     """
     Permissão para o CustomUserViewSet:
       - Métodos seguros são permitidos para todos.
-      - Apenas usuários do grupo "Administrador" (ou superusuários) podem modificar (criar, editar ou deletar) os usuários.
+      - Apenas usuários "Administrador" (ou superusuários) podem modificar (criar, editar ou deletar) os usuários.
     """
     def has_permission(self, request, view):
         if not request.user.is_authenticated:
@@ -54,5 +54,5 @@ class CustomUserPermission(BasePermission):
         if request.method in SAFE_METHODS:
             return True
 
-        # Permite alterações somente aos superusuários ou aos que pertencem ao grupo "Administrador"
-        return request.user.is_superuser or request.user.groups.filter(name="Administrador").exists()
+        # Permite alterações somente aos superusuários ou aos administradores
+        return request.user.is_superuser or request.user.is_admin()

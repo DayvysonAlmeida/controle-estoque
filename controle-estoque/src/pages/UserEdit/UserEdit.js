@@ -11,31 +11,26 @@ const UserEdit = () => {
     const { showNotification } = useNotification();
 
     const [userData, setUserData] = useState({
-        username: "", nome: "", email: "", funcao: "", role: "", estoques: [], groups_ids: [],
+        username: "", nome: "", email: "", funcao: "", role: "padrao", estoques: [],
     });
     const [fieldErrors, setFieldErrors] = useState({});
     const [availableStocks, setAvailableStocks] = useState([]);
-    const [availableGroups, setAvailableGroups] = useState([]);
     const [showResetModal, setShowResetModal] = useState(false);
     const [passwordData, setPasswordData] = useState({ newPassword: "", confirmPassword: "" });
 
     useEffect(() => {
         const fetchInitialData = async () => {
             try {
-                const [userRes, stocksRes, groupsRes] = await Promise.all([
+                const [userRes, stocksRes] = await Promise.all([
                     api.get(`users/${userId}/`),
-                    api.get("estoques/"),
-                    api.get("groups/")
+                    api.get("estoques/")
                 ]);
                 const stocksData = stocksRes.data.results || stocksRes.data;
                 setAvailableStocks(Array.isArray(stocksData) ? stocksData : []);
-                const groupsData = groupsRes.data.results || groupsRes.data;
-                setAvailableGroups(Array.isArray(groupsData) ? groupsData : []);
-                const { estoques = [], groups = [] } = userRes.data;
+                const { estoques = [] } = userRes.data;
                 setUserData({
                     ...userRes.data,
                     estoques: estoques.map(s => s.id || s),
-                    groups_ids: groups.map(g => g.id || g),
                 });
             } catch (error) {
                 showNotification("Falha ao carregar dados do utilizador.", "error");
@@ -65,19 +60,7 @@ const UserEdit = () => {
         });
     };
 
-    const handleGroupCheckboxChange = (e) => {
-        const value = Number(e.target.value);
-        const checked = e.target.checked;
-        setUserData((prev) => {
-            let newGroups = prev.groups_ids || [];
-            if (checked && !newGroups.includes(value)) {
-                newGroups = [...newGroups, value];
-            } else if (!checked) {
-                newGroups = newGroups.filter((id) => id !== value);
-            }
-            return { ...prev, groups_ids: newGroups };
-        });
-    };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -134,7 +117,26 @@ const UserEdit = () => {
                             <input type="text" name="nome" value={userData.nome} onChange={handleChange} required className={`${styles.input} ${fieldErrors.nome ? styles.inputError : ""}`} />
                         </div>
                     </div>
-                    {/* ... (outros campos: email, funcao, role) ... */}
+                    <div className={styles.formRow}>
+                        <div className={styles.formGroup}>
+                            <label className={styles.label}>Email</label>
+                            <input type="email" name="email" value={userData.email} onChange={handleChange} required className={`${styles.input} ${fieldErrors.email ? styles.inputError : ""}`} />
+                        </div>
+                    </div>
+                    <div className={styles.formRow}>
+                        <div className={styles.formGroup}>
+                            <label className={styles.label}>Função (Cargo)</label>
+                            <input type="text" name="funcao" value={userData.funcao || ""} onChange={handleChange} className={`${styles.input} ${fieldErrors.funcao ? styles.inputError : ""}`} />
+                        </div>
+                        <div className={styles.formGroup}>
+                            <label className={styles.label}>Nível de Acesso (Role)</label>
+                            <select name="role" value={userData.role} onChange={handleChange} required className={`${styles.input} ${fieldErrors.role ? styles.inputError : ""}`}>
+                                <option value="leitor">Leitor (Apenas Visualizar)</option>
+                                <option value="padrao">Padrão (Criar/Editar)</option>
+                                <option value="admin">Administrador (Acesso Total)</option>
+                            </select>
+                        </div>
+                    </div>
                     <div className={styles.formGroup}>
                         <label className={styles.label}>Acesso aos Estoques</label>
                         <div className={styles.checkboxContainer}>
@@ -146,17 +148,7 @@ const UserEdit = () => {
                             ))}
                         </div>
                     </div>
-                    <div className={styles.formGroup}>
-                        <label className={styles.label}>Grupos de Permissão</label>
-                        <div className={styles.checkboxContainer}>
-                            {availableGroups.map((group) => (
-                                <div key={group.id} className={styles.checkboxItem}>
-                                    <input type="checkbox" id={`group-${group.id}`} value={group.id} checked={(userData.groups_ids || []).includes(group.id)} onChange={handleGroupCheckboxChange} />
-                                    <label htmlFor={`group-${group.id}`}>{group.name}</label>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+
                     <div className={styles.buttonContainer}>
                         <button type="button" className={`${styles.button} ${styles.passwordButton}`} onClick={() => setShowResetModal(true)}>
                             Redefinir Senha

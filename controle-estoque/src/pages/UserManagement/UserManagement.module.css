@@ -133,3 +133,28 @@
   font-size: 14px;
   cursor: pointer;
 }
+
+/* --- ROLE BADGES --- */
+.roleBadge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.roleAdmin {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.rolePadrao {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.roleLeitor {
+  background-color: #fef3c7;
+  color: #92400e;
+}
